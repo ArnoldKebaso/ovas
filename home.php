@@ -356,26 +356,33 @@
     <div class="container py-5">
         <div class="row mb-5">
             <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
-                <h2 class="display-4 fw-bold text-primary mb-3">About Our Clinic</h2>
+                <h2 class="display-4 fw-bold text-primary mb-3">About <?= $_settings->info('name') ?></h2>
                 <p class="lead text-muted">
-                    <?= $_settings->info('name') ?> - Your trusted partner in pet healthcare since 2010
+                    Your trusted partner in comprehensive veterinary care since 2010
                 </p>
             </div>
         </div>
 
         <div class="row align-items-center mb-5">
             <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <img src="<?= base_url ?>uploads/assets/about_clinic.webp" alt="Clinic Interior" 
+                <img src="<?= base_url ?>uploads/assets/about_clinic.webp" alt="<?= $_settings->info('name') ?> Clinic" 
                      class="img-fluid rounded-4 shadow-lg" loading="lazy" 
                      onerror="this.src='<?= base_url ?>uploads/<?= $_settings->info('cover') ?>'">
             </div>
             <div class="col-lg-6" data-aos="fade-left">
                 <h3 class="fw-bold mb-4">Why Choose Us?</h3>
                 <p class="text-muted mb-4">
-                    We are committed to enhancing the health and happiness of pets by providing a seamless, 
-                    user-friendly platform for scheduling veterinary appointments. Our mission is to make pet care 
-                    convenient for owners, offering access to a network of skilled and compassionate veterinarians.
+                    We are committed to enhancing the health and happiness of pets through exceptional veterinary care, 
+                    modern facilities, and compassionate service. Our experienced team provides comprehensive medical 
+                    attention for all your beloved companions.
                 </p>
+                <p class="text-muted mb-4">
+                    From routine checkups to emergency care, we're here 24/7 to ensure your pets receive the best 
+                    possible treatment in a safe and caring environment.
+                </p>
+                <a href="./?page=about_us" class="btn btn-primary btn-lg rounded-pill px-4 mb-4">
+                    <i class="fas fa-arrow-right me-2"></i> Learn More About Us
+                </a>
                 <div class="row g-4">
                     <div class="col-sm-6">
                         <div class="d-flex align-items-center">
@@ -477,108 +484,93 @@
     <div class="container py-5">
         <div class="row">
             <div class="col-lg-8 mx-auto text-center mb-5" data-aos="fade-up">
-                <h2 class="display-4 fw-bold text-primary mb-3">Get in Touch</h2>
-                <p class="lead text-muted">Have questions? We'd love to hear from you.</p>
+                <h2 class="display-4 fw-bold text-primary mb-3">Contact <?= $_settings->info('name') ?></h2>
+                <p class="lead text-muted">We'd love to hear from you. Get in touch with our friendly team.</p>
             </div>
         </div>
 
         <div class="row g-4">
-            <div class="col-lg-4" data-aos="fade-right">
-                <div class="card border-0 shadow-sm h-100">
+            <!-- Quick Contact Cards -->
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4">Contact Information</h5>
-                        
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="flex-shrink-0">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-phone text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-semibold mb-1">Phone</h6>
-                                <p class="text-muted mb-0"><?= $_settings->info('contact') ?></p>
-                            </div>
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-phone fa-2x text-primary"></i>
                         </div>
-
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="flex-shrink-0">
-                                <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-envelope text-success"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-semibold mb-1">Email</h6>
-                                <p class="text-muted mb-0"><?= $_settings->info('email') ?></p>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-start mb-3">
-                            <div class="flex-shrink-0">
-                                <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-map-marker-alt text-info"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-semibold mb-1">Location</h6>
-                                <p class="text-muted mb-0"><?= $_settings->info('address') ?></p>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-start">
-                            <div class="flex-shrink-0">
-                                <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-clock text-warning"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-semibold mb-1">Business Hours</h6>
-                                <p class="text-muted mb-0">Mon - Sat: 8:00 AM - 6:00 PM</p>
-                                <p class="text-muted mb-0">Sunday: Emergency Only</p>
-                            </div>
-                        </div>
+                        <h5 class="fw-bold mb-2">Call Us</h5>
+                        <p class="text-muted mb-3">Speak with our team</p>
+                        <a href="tel:<?= $_settings->info('contact') ?>" class="btn btn-outline-primary btn-sm">
+                            <?= $_settings->info('contact') ?>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-8" data-aos="fade-left">
-                <div class="card border-0 shadow-sm h-100">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="card border-0 shadow-sm text-center h-100">
                     <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4">Send us a Message</h5>
-                        <form action="<?= base_url ?>contact_us.php" method="POST" class="needs-validation" novalidate>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="contact_name" class="form-label fw-semibold">Name *</label>
-                                    <input type="text" class="form-control form-control-lg" id="contact_name" name="name" required>
-                                    <div class="invalid-feedback">Please enter your name.</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="contact_email" class="form-label fw-semibold">Email *</label>
-                                    <input type="email" class="form-control form-control-lg" id="contact_email" name="email" required>
-                                    <div class="invalid-feedback">Please enter a valid email.</div>
-                                </div>
-                                <div class="col-12">
-                                    <label for="contact_subject" class="form-label fw-semibold">Subject *</label>
-                                    <input type="text" class="form-control form-control-lg" id="contact_subject" name="subject" required>
-                                    <div class="invalid-feedback">Please enter a subject.</div>
-                                </div>
-                                <div class="col-12">
-                                    <label for="contact_message" class="form-label fw-semibold">Message *</label>
-                                    <textarea class="form-control" id="contact_message" name="message" rows="5" required></textarea>
-                                    <div class="invalid-feedback">Please enter your message.</div>
-                                </div>
-                                <div class="col-12">
-                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">
-                                        <i class="fas fa-paper-plane me-2"></i> Send Message
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-envelope fa-2x text-success"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Email Us</h5>
+                        <p class="text-muted mb-3">Send us a message</p>
+                        <a href="mailto:<?= $_settings->info('email') ?>" class="btn btn-outline-success btn-sm">
+                            <?= $_settings->info('email') ?>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-map-marker-alt fa-2x text-info"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Visit Us</h5>
+                        <p class="text-muted mb-3">Find our clinic</p>
+                        <p class="small text-muted mb-0"><?= $_settings->info('address') ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Business Hours</h5>
+                        <p class="text-muted mb-3">We're here to help</p>
+                        <p class="small text-muted mb-1">Mon-Sat: 8AM-6PM</p>
+                        <p class="small text-muted mb-0">Sun: Emergency Only</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="row mt-5">
+            <div class="col-lg-8 mx-auto text-center" data-aos="fade-up" data-aos-delay="500">
+                <div class="bg-light rounded-4 p-5">
+                    <h3 class="fw-bold text-primary mb-3">Need More Information?</h3>
+                    <p class="text-muted mb-4">
+                        Visit our full contact page for detailed information, emergency contacts, FAQs, and our comprehensive contact form.
+                    </p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="./?page=contact_us" class="btn btn-primary btn-lg rounded-pill px-5">
+                            <i class="fas fa-paper-plane me-2"></i> Contact Us
+                        </a>
+                        <a href="tel:<?= $_settings->info('contact') ?>" class="btn btn-outline-danger btn-lg rounded-pill px-5">
+                            <i class="fas fa-phone me-2"></i> Emergency Call
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Toast Notifications -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">

@@ -35,13 +35,13 @@
           <a href="./?page=services" class="nav-link fw-semibold" data-page="services">Services</a>
         </li>
         <li class="nav-item">
-          <a href="#appointment" class="nav-link fw-semibold" data-section="appointment">Book Appointment</a>
+          <a href="./?page=home#appointment" class="nav-link fw-semibold" data-section="appointment">Book Appointment</a>
         </li>
         <li class="nav-item">
-          <a href="#about" class="nav-link fw-semibold" data-section="about">About Us</a>
+          <a href="./?page=about_us" class="nav-link fw-semibold" data-page="about_us">About Us</a>
         </li>
         <li class="nav-item">
-          <a href="#contact" class="nav-link fw-semibold" data-section="contact">Contact</a>
+          <a href="./?page=contact_us" class="nav-link fw-semibold" data-page="contact_us">Contact</a>
         </li>
         <?php if($_settings->userdata('id') > 0 && $_settings->userdata('login_type') != 1): ?>
         <li class="nav-item">

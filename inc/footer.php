@@ -169,9 +169,9 @@
         <ul class="list-unstyled">
           <li class="mb-2"><a href="./?page=home" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Home</a></li>
           <li class="mb-2"><a href="./?page=services" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Services</a></li>
-          <li class="mb-2"><a href="#appointment" class="text-white-50 text-decoration-none hover-primary footer-section-link"><i class="fas fa-chevron-right me-2 small"></i>Book Appointment</a></li>
-          <li class="mb-2"><a href="#about" class="text-white-50 text-decoration-none hover-primary footer-section-link"><i class="fas fa-chevron-right me-2 small"></i>About Us</a></li>
-          <li class="mb-2"><a href="#contact" class="text-white-50 text-decoration-none hover-primary footer-section-link"><i class="fas fa-chevron-right me-2 small"></i>Contact</a></li>
+          <li class="mb-2"><a href="./?page=home#appointment" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Book Appointment</a></li>
+          <li class="mb-2"><a href="./?page=about_us" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>About Us</a></li>
+          <li class="mb-2"><a href="./?page=contact_us" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Contact</a></li>
         </ul>
       </div>
 

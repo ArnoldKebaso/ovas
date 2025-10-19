@@ -93,34 +93,52 @@
 
   // IntersectionObserver for section highlighting - Only run on homepage
   if (sections.length > 0) {
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -60% 0px', // Trigger when section is 20% from top
-      threshold: 0,
-    };
+    // Alternative ScrollSpy using scroll position
+    function updateActiveNavLink() {
+      if (window.scrollY < 100) {
+        // At top of page
+        setActiveNavLink('home');
+        return;
+      }
 
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const sectionId = entry.target.getAttribute('id');
-          
-          // Remove active class from all links
-          navLinks.forEach((link) => link.classList.remove('active'));
-          
-          // Add active class to current section link - match both hash-only and full URL with hash
-          const activeLink = document.querySelector(`#mainNav .nav-link[href*="#${sectionId}"]`);
-          if (activeLink) {
-            activeLink.classList.add('active');
-          }
+      let currentSection = '';
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const scrollPos = window.scrollY + 100; // Account for navbar
+
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          currentSection = section.getAttribute('id');
         }
       });
-    };
 
-    const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
+      if (currentSection) {
+        setActiveNavLink(currentSection);
+      }
+    }
 
-    sections.forEach((section) => {
-      sectionObserver.observe(section);
-    });
+    function setActiveNavLink(sectionId) {
+      // Remove active class from all links
+      navLinks.forEach((link) => link.classList.remove('active'));
+      
+      // Add active class to current section link
+      const activeLink = document.querySelector(`#mainNav .nav-link[href="#${sectionId}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+
+    // Use scroll event instead of IntersectionObserver for more precise control
+    let scrollTimer = null;
+    function handleScrollSpyUpdate() {
+      if (scrollTimer) {
+        clearTimeout(scrollTimer);
+      }
+      scrollTimer = setTimeout(updateActiveNavLink, 10);
+    }
+
+    window.addEventListener('scroll', handleScrollSpyUpdate, { passive: true });
+    updateActiveNavLink(); // Initial check
   }
 
   // Smooth scroll on nav link click - only for hash links

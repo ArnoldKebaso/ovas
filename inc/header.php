@@ -10,10 +10,16 @@
   </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="<?php echo $_settings->info('name') ?> - Professional veterinary care and pet wellness services">
+    <meta name="keywords" content="veterinary, pet care, animal hospital, veterinarian, pet wellness">
+    <meta name="author" content="<?php echo $_settings->info('name') ?>">
   	<title><?php echo $_settings->info('title') != false ? $_settings->info('title').' | ' : '' ?><?php echo $_settings->info('name') ?></title>
     <link rel="icon" href="<?php echo validate_image($_settings->info('logo')) ?>" />
-    <!-- Google Font: Source Sans Pro -->
-    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback"> -->
+    
+    <!-- Google Fonts: Inter & Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/fontawesome-free/css/all.min.css">
     <!-- Ionicons -->
@@ -45,6 +51,16 @@
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/summernote/summernote-bs4.min.css">
      <!-- SweetAlert2 -->
   <link rel="stylesheet" href="<?php echo base_url ?>plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+  
+    <!-- AOS - Animate On Scroll -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    
+    <!-- Custom OVAS Styles -->
+    <link rel="stylesheet" href="<?php echo base_url ?>libs/css/ovas.css">
+    
     <style type="text/css">/* Chart.js */
       @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}
     </style>
@@ -57,6 +73,16 @@
     <script src="<?php echo base_url ?>plugins/sweetalert2/sweetalert2.min.js"></script>
     <!-- Toastr -->
     <script src="<?php echo base_url ?>plugins/toastr/toastr.min.js"></script>
+    
+    <!-- AOS - Animate On Scroll JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <!-- Custom OVAS JavaScript -->
+    <script src="<?php echo base_url ?>assets/js/ovas.js" defer></script>
+    
     <script>
         var _base_url_ = '<?php echo base_url ?>';
     </script>

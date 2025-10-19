@@ -1,0 +1,39 @@
+Section ID,Placement,Asset Type,Suggested Keywords,Suggested Source URL,Notes (size/ratio/usage),Example Filename
+nav,Logo (header),Logo SVG,veterinary logo paw stethoscope minimal,https://logomakr.com,Export as SVG; height 28–32px; crisp on dark/light,logo_ovas.svg
+nav,Nav icons,Icons (SVG),home; calendar; stethoscope; info; phone; paw,https://tabler.io/icons,24px outline; same stroke width,icon_nav_home.svg
+home,Hero slide 1,Photo (WebP),veterinarian with dog happy clinic,https://unsplash.com/s/photos/veterinarian,Hero 1920x900; text-safe area left; use picture with .webp,hero_01.webp
+home,Hero slide 2,Photo (WebP),cat checkup at vet clinic,https://pexels.com/search/veterinarian%20cat/,Hero 1920x900; subtle dark overlay 40%,hero_02.webp
+home,Hero slide 3,Photo (WebP),vet clinic reception with pet owner,https://unsplash.com/s/photos/animal-hospital,Hero 1920x900; center composition,hero_03.webp
+home,Hero accent,Illustration SVG,pet care illustration modern,https://storyset.com/animals,Decorative SVG in corner; low opacity,hero_accent.svg
+home,CTA icon,Icon (SVG),calendar-plus,https://lucide.dev/icons/calendar-plus,Inline SVG inside primary CTA,icon_calendar_plus.svg
+services,Section header art,Illustration SVG,veterinary services illustration,https://undraw.co/illustrations,Wide illustration beside title,services_header.svg
+services,Vaccination card icon,Icon (SVG),syringe,https://phosphoricons.com,40–48px inside circle,svc_icon_vaccination.svg
+services,Deworming card icon,Icon (SVG),bandage; pills,https://tabler.io/icons,40–48px inside circle,svc_icon_deworming.svg
+services,Grooming card icon,Icon (SVG),scissors; shower,https://lucide.dev/icons,40–48px inside circle,svc_icon_grooming.svg
+services,Dental card icon,Icon (SVG),tooth,https://tabler.io/icons/tooth,40–48px inside circle,svc_icon_dental.svg
+services,Surgery card icon,Icon (SVG),heartbeat; first-aid,https://phosphoricons.com,40–48px inside circle,svc_icon_surgery.svg
+services,Diagnostics card icon,Icon (SVG),microscope,https://tabler.io/icons/microscope,40–48px inside circle,svc_icon_diagnostics.svg
+services,Boarding card icon,Icon (SVG),home-heart,https://lucide.dev/icons/home,40–48px inside circle,svc_icon_boarding.svg
+services,Service card photo,Photo (WebP),dog vaccination; cat dental cleaning; pet grooming salon,https://pexels.com/search/pet%20vaccination/,Square 1:1 800px; lazy-load,svc_photo_generic.webp
+appointment,Header art,Illustration SVG,calendar booking illustration,https://storyset.com/time,Left of heading,appointment_header.svg
+appointment,Decorative icon,Icon (SVG),clock,https://heroicons.com,Badge for slot chips,icon_clock.svg
+appointment,Success state,Illustration SVG,success check pet,https://storyset.com/success,Shown after submit,appointment_success.svg
+about,Clinic interior,Photo (WebP),veterinary clinic interior clean light,https://unsplash.com/s/photos/veterinary-clinic,Banner 1600x700; low overlay,about_clinic.webp
+about,Team portrait 1,Photo (WebP),veterinarian portrait,https://pexels.com/search/veterinarian%20portrait/,3:4 portrait; 800px,team_vet1.webp
+about,Team portrait 2,Photo (WebP),veterinary team smiling,https://pexels.com/search/veterinarian%20team/,3:4 or 1:1; 800px,team_vet2.webp
+about,Team portrait 3,Photo (WebP),nurse with puppy,https://unsplash.com/s/photos/nurse-dog,3:4; 800px,team_vet3.webp
+about,Stats icons,Icons (SVG),award; shield-check; heart,https://lucide.dev/icons,Used in KPI counters,icon_award.svg
+testimonials,Owner avatar generator,Avatar SVG,dicebear avataaars,https://www.dicebear.com/styles/avataaars,Generate 6 avatars,avatar_owner_01.svg
+testimonials,Pet overlay icon,Icon (SVG),paw-print,https://tabler.io/icons/paw,Small badge on avatar,icon_paw.svg
+contact,Contact illustration,Illustration SVG,contact us support pet,https://storyset.com/communication,Right side of form,contact_art.svg
+contact,Map placeholder,Illustration SVG,map city illustration,https://storyset.com/maps,Shown if Google Map disabled,contact_map_placeholder.svg
+contact,Channel icons,Icons (SVG),phone; mail; whatsapp; instagram,https://simpleicons.org,Use brand colors in footer,icon_whatsapp.svg
+footer,Footer background pattern,SVG pattern,paw pattern seamless vector,https://www.vecteezy.com/free-vector/paw-pattern,"Very light, opacity 0.05",bg_paw_pattern.svg
+footer,Clinic small photo,Photo (WebP),animal hospital exterior dusk,https://unsplash.com/s/photos/animal-hospital,Small strip 1600x400,footer_clinic.webp
+footer,Trust icons,Icons (SVG),lock; shield; wheelchair,https://tabler.io/icons,Accessibility & security badges,icon_lock.svg
+ui,Loading animation,Lottie JSON,loading spinner minimal,https://lottiefiles.com/search?q=loading,Use <lottie-player> or JS lib,loading.json
+ui,Success toast,Icon (SVG),check-circle,https://heroicons.com,Green accent,icon_check_circle.svg
+ui,Error toast,Icon (SVG),x-circle,https://heroicons.com,Red accent,icon_x_circle.svg
+gallery,Pet dog,Photo (WebP),dog portrait studio,https://unsplash.com/s/photos/dog-portrait,Landscape 1200x800,gallery_dog.webp
+gallery,Pet cat,Photo (WebP),cat portrait studio,https://unsplash.com/s/photos/cat-portrait,Landscape 1200x800,gallery_cat.webp
+gallery,Small pets grid,Photo (WebP),rabbit guinea pig hamster portrait,https://unsplash.com/s/photos/rabbit,Grid 3-up; 800px squares,gallery_smallpets.webp

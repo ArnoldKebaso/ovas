@@ -1,0 +1,51 @@
+Page,Placement,Asset Type,Suggested Keywords,Suggested Source,Notes,Example Filename
+Home,Hero top banner,Photo (WebP),veterinarian with dog; vet clinic reception; pet owner at vet; animal hospital interior,https://unsplash.com/s/photos/veterinary,"Wide hero 16:9, subtle overlay text",home_hero.webp
+Home,Feature tiles (Services),Illustrations,pet care illustrations; vaccination illustration; grooming illustration; vet checkup illustration,https://storyset.com/animals,Use same style pack for consistency,services_illustrations_set.svg
+Home,Trust badges,Icons (SVG),shield check; award; clock; stethoscope,https://lucide.dev/icons/,"Line icons, 24–32px",icon_shield-check.svg
+Home,CTA button icon,Icon (SVG),calendar plus; calendar check,https://tabler.io/icons,Use outline style,icon_calendar-plus.svg
+Home,Testimonials avatars,Avatars,human avatars; pet owner avatars,https://www.dicebear.com/styles/avataaars,Generate consistent avatars,avatar_owner1.svg
+Services,Service card icon,Icon (SVG),paw print; syringe; tooth; bandage; microscope; heart pulse,https://phosphoricons.com,One icon per service,icon_paw-print.svg
+Services,Service card thumbnail,Photo (WebP),dog vaccination; cat checkup; pet dental cleaning; pet grooming,https://pexels.com/search/veterinarian,Square 1:1 crop,svc_vaccination.webp
+Services,Empty state,Illustration,pets line illustration; empty state veterinary,https://undraw.co/illustrations,Muted colors,empty_services.svg
+Appointment,Header banner,Illustration,calendar scheduling; booking appointment illustration; reminder alarm,https://storyset.com/time,Keep light-weight SVG,appt_header.svg
+Appointment,Step icons,Icons (SVG),numbered steps; pet; calendar; clock; check,https://heroicons.com,Outline 24px,step_calendar.svg
+Appointment,Time slot badge,Icon (SVG),clock; time; schedule,https://icons8.com/icons/set/clock,Use inline SVG if possible,icon_clock.svg
+Appointment,Success screen,Illustration,check mark; pet with vet; success confirmation,https://storyset.com/success,Green accent,appt_success.svg
+Auth,Left panel artwork,Illustration,pet owner sign in; secure login; authentication illustration,https://undraw.co/illustrations,Keep centered form; artwork on side,auth_side.svg
+Auth,Social proof strip,Logos (Optional),clinic logo; partner logos,https://simpleicons.org,Monochrome SVG,logo_placeholder.svg
+Owner Dashboard,Header avatar,Avatar (SVG),user avatar neutral; pet owner avatar,https://www.dicebear.com/styles/micah,Auto-generated based on name,owner_avatar.svg
+Owner Dashboard,Widget icons,Icons (SVG),calendar; bell; paw; message,https://lucide.dev/icons/,Consistent stroke,icon_bell.svg
+Owner Dashboard,Empty appointments,Illustration,no events calendar; empty schedule pet,https://storyset.com/time,Invite to book,empty_appointments.svg
+My Pets,Pet profile photo,Photo (WebP),dog portrait white background; cat portrait studio; pet profile,https://unsplash.com/s/photos/pet-portrait,"Square 1:1, center face",pet_profile_dog.webp
+My Pets,Species icons,Icons (SVG),dog; cat; rabbit; bird; hamster,https://tabler.io/icons,Use same set across app,icon_dog.svg
+My Pets,Vaccination card,Icon (SVG),syringe; certificate; shield,https://phosphoricons.com,Badge on card,icon_syringe.svg
+About,Team headshots,Photos (WebP),veterinarian portrait; veterinary team; clinic staff,https://pexels.com/search/veterinarian%20team/,3:4 or 1:1 portraits,team_vet1.webp
+About,Clinic exterior,Photo (WebP),animal hospital exterior; veterinary clinic building,https://unsplash.com/s/photos/animal-hospital,Use as banner or gallery,clinic_exterior.webp
+About,Mission section icon,Icon (SVG),heart hands; handshake,https://lucide.dev/icons/,Accent color,icon_heart-handshake.svg
+Contact,Map pin,Icon (SVG),map-pin; navigation,https://heroicons.com,Pair with map embed,icon_map-pin.svg
+Contact,Support channel icons,Icons (SVG),phone; mailbox; whatsapp; sms,https://simpleicons.org,Respect brand usage,icon_phone.svg
+Contact,Form illustration,Illustration,customer support; contact us pet; messaging,https://storyset.com/communication,Right column artwork,contact_art.svg
+Admin,Sidebar icons,Icons (SVG),dashboard; calendar; users; services; settings; reports,https://tabler.io/icons,Outline 20–24px,icon_gauge.svg
+Admin,Empty states,Illustrations,no data charts; empty list,https://undraw.co/illustrations,Light stroke,empty_table.svg
+Admin,User avatars,Avatars,staff avatars vector; initials avatars,https://www.dicebear.com/styles/initials,Auto initials fallback,avatar_initials.svg
+404,Lost pet illustration,Illustration,lost dog; lost cat; 404 page not found pet,https://storyset.com/oops,Friendly tone,404_lost_pet.svg
+Maintenance,Wrench/paw,Icon (SVG),wrench; tools; paw,https://phosphoricons.com,Centered icon + text,icon_wrench.svg
+Email,Header logo,Logo (SVG),veterinary logo paw stethoscope,https://logomakr.com,Export SVG for crisp email,logo_clinic.svg
+Email,Social icons,Icons (PNG/SVG),facebook; twitter; instagram; whatsapp,https://simpleicons.org,Use brand colors,icon_instagram.svg
+SMS,Notification icon,Icon (SVG),sms; bell; mobile,https://lucide.dev/icons/,Small inline icon,icon_sms.svg
+Payments,Payment icons,Icons (SVG),credit-card; mpesa logo; paypal; stripe,https://simpleicons.org,Only if payments enabled,icon_credit-card.svg
+UI,Loading,Lottie/JSON animation,loading spinner lottie,https://lottiefiles.com/search?q=loading,Optional micro-interactions,loading.json
+UI,Success toast,Icon (SVG),check-circle,https://heroicons.com,Green accent,icon_check-circle.svg
+UI,Error toast,Icon (SVG),x-circle,https://heroicons.com,Red accent,icon_x-circle.svg
+Services,Surgery,Photo (WebP),veterinary surgery operating room (non-graphic),https://unsplash.com/s/photos/veterinary-surgery,Blur sensitive content,svc_surgery.webp
+Services,Grooming,Photo (WebP),pet grooming salon; dog bath,https://pexels.com/search/pet%20grooming/,"Bright, friendly",svc_grooming.webp
+Services,Dental,Photo (WebP),pet dental cleaning; dog teeth check,https://pexels.com/search/pet%20dental/,Close-up but non-graphic,svc_dental.webp
+Services,Vaccination,Photo (WebP),pet vaccination vet nurse,https://pexels.com/search/pet%20vaccination/,Avoid needles near faces if sensitive,svc_vaccination2.webp
+TeleVet,Chat illustration,Illustration,telemedicine vet; online consultation pet,https://storyset.com/online,For future module,televet.svg
+Trust,Accessibility icons,Icons (SVG),wheelchair; captions; hearing,https://tabler.io/icons,Footer trust strip,icon_wheelchair.svg
+Trust,Privacy/Security,Icons (SVG),lock; shield; gdpr,https://lucide.dev/icons/,Policy pages,icon_lock.svg
+Success,Celebration paw,Illustration,pet celebration; confetti paw,https://storyset.com/success,Thank-you screen,success_paw.svg
+Empty,No pets yet,Illustration,add pet illustration,https://undraw.co/illustrations,Encourage add,empty_pets.svg
+Location,Map placeholder,Illustration,map illustration city,https://storyset.com/maps,When maps disabled,map_placeholder.svg
+Footer,Clinic interior small,Photo (WebP),veterinary clinic interior clean,https://unsplash.com/s/photos/veterinary-clinic,Low height banner,footer_clinic.webp
+Footer,Paw pattern,SVG pattern,paw pattern seamless vector,https://www.vecteezy.com/free-vector/paw-pattern,Subtle background texture,bg_paw_pattern.svg

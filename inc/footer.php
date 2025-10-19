@@ -133,8 +133,139 @@
       <div class="drp-buttons"><span class="drp-selected"></span><button class="cancelBtn btn btn-sm btn-default" type="button">Cancel</button><button class="applyBtn btn btn-sm btn-primary" disabled="disabled" type="button">Apply</button> </div>
     </div>
     <div class="jqvmap-label" style="display: none; left: 1093.83px; top: 394.361px;"></div>
+
+<!-- Modern Footer -->
+<footer class="modern-footer bg-dark text-white py-5 mt-5">
+  <div class="container">
+    <div class="row g-4">
+      <!-- About Column -->
+      <div class="col-lg-4 col-md-6">
+        <div class="d-flex align-items-center mb-3">
+          <img src="<?= validate_image($_settings->info('logo')) ?>" alt="Logo" class="rounded-circle me-3" style="height: 50px; width: 50px; object-fit: cover;">
+          <h5 class="mb-0 fw-bold"><?= $_settings->info('short_name') ?></h5>
+        </div>
+        <p class="text-white-50 mb-3">
+          Professional veterinary care for your beloved pets. We provide comprehensive health services with compassion and expertise.
+        </p>
+        <div class="d-flex gap-2">
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Links Column -->
+      <div class="col-lg-2 col-md-6">
+        <h6 class="fw-bold mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#home" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Home</a></li>
+          <li class="mb-2"><a href="#services" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Services</a></li>
+          <li class="mb-2"><a href="#appointment" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Book Appointment</a></li>
+          <li class="mb-2"><a href="#about" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>About Us</a></li>
+          <li class="mb-2"><a href="#contact" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Services Column -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="fw-bold mb-3">Our Services</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><span class="text-white-50"><i class="fas fa-syringe me-2 text-primary"></i>Vaccination</span></li>
+          <li class="mb-2"><span class="text-white-50"><i class="fas fa-pills me-2 text-success"></i>Deworming</span></li>
+          <li class="mb-2"><span class="text-white-50"><i class="fas fa-cut me-2 text-info"></i>Grooming</span></li>
+          <li class="mb-2"><span class="text-white-50"><i class="fas fa-tooth me-2 text-warning"></i>Dental Care</span></li>
+          <li class="mb-2"><span class="text-white-50"><i class="fas fa-heartbeat me-2 text-danger"></i>Surgery</span></li>
+        </ul>
+      </div>
+
+      <!-- Contact Column -->
+      <div class="col-lg-3 col-md-6">
+        <h6 class="fw-bold mb-3">Contact Info</h6>
+        <ul class="list-unstyled">
+          <li class="mb-3 d-flex align-items-start">
+            <i class="fas fa-map-marker-alt me-3 mt-1 text-primary"></i>
+            <span class="text-white-50 small"><?= $_settings->info('address') ?></span>
+          </li>
+          <li class="mb-3 d-flex align-items-center">
+            <i class="fas fa-phone me-3 text-success"></i>
+            <a href="tel:<?= $_settings->info('contact') ?>" class="text-white-50 text-decoration-none hover-primary small"><?= $_settings->info('contact') ?></a>
+          </li>
+          <li class="mb-3 d-flex align-items-center">
+            <i class="fas fa-envelope me-3 text-info"></i>
+            <a href="mailto:<?= $_settings->info('email') ?>" class="text-white-50 text-decoration-none hover-primary small"><?= $_settings->info('email') ?></a>
+          </li>
+          <li class="mb-3 d-flex align-items-start">
+            <i class="fas fa-clock me-3 mt-1 text-warning"></i>
+            <span class="text-white-50 small">Mon - Sat: 8AM - 6PM<br>Sunday: Emergency Only</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <hr class="border-secondary my-4">
+    <div class="row align-items-center">
+      <div class="col-md-6 text-center text-md-start">
+        <p class="mb-0 text-white-50 small">
+          &copy; <?= date('Y') ?> <?= $_settings->info('name') ?>. All rights reserved.
+        </p>
+      </div>
+      <div class="col-md-6 text-center text-md-end">
+        <p class="mb-0 text-white-50 small">
+          <a href="#" class="text-white-50 text-decoration-none hover-primary me-3">Privacy Policy</a>
+          <a href="#" class="text-white-50 text-decoration-none hover-primary me-3">Terms of Service</a>
+          <a href="./admin" class="text-white-50 text-decoration-none hover-primary">Admin</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+.modern-footer {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.modern-footer .hover-primary:hover {
+  color: #2563eb !important;
+  transform: translateX(4px);
+  transition: all 0.3s ease;
+}
+
+.modern-footer .btn-outline-light:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+.modern-footer h6 {
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.modern-footer h6::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #2563eb, #10b981);
+}
+</style>
+
 <script>
   $(function(){
-    $('.wrapper>.content-wrapper').css("min-height",$(window).height() - $('#top-Nav').height() - $('#login-nav').height() - $("footer.main-footer").height())
+    $('.wrapper>.content-wrapper').css("min-height",$(window).height() - $('#mainNav').height() - $("footer.modern-footer").height())
   })
 </script>

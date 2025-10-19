@@ -7,6 +7,28 @@
   'use strict';
 
   // ============================================
+  // Scroll to Hash on Page Load
+  // ============================================
+  window.addEventListener('load', function() {
+    // Check if there's a hash in the URL
+    if (window.location.hash) {
+      const hash = window.location.hash;
+      const targetSection = document.querySelector(hash);
+      
+      if (targetSection) {
+        // Small delay to ensure page is fully loaded
+        setTimeout(() => {
+          const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          });
+        }, 100);
+      }
+    }
+  });
+
+  // ============================================
   // Initialize AOS (Animate On Scroll)
   // ============================================
   if (typeof AOS !== 'undefined') {
@@ -57,7 +79,7 @@
   // Navbar Scroll Effects & ScrollSpy
   // ============================================
   const navbar = document.getElementById('mainNav');
-  const navLinks = document.querySelectorAll('#mainNav .nav-link[href^="#"]');
+  const navLinks = document.querySelectorAll('#mainNav .nav-link[href^="#"], #mainNav .nav-link[href*="#"]');
   const sections = document.querySelectorAll('section[id]');
 
   // Add scrolled class to navbar
@@ -69,49 +91,58 @@
     }
   }
 
-  // IntersectionObserver for section highlighting
-  const observerOptions = {
-    root: null,
-    rootMargin: '-50% 0px -50% 0px',
-    threshold: 0,
-  };
+  // IntersectionObserver for section highlighting - Only run on homepage
+  if (sections.length > 0) {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px',
+      threshold: 0,
+    };
 
-  const observerCallback = (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const sectionId = entry.target.getAttribute('id');
-        
-        // Remove active class from all links
-        navLinks.forEach((link) => link.classList.remove('active'));
-        
-        // Add active class to current section link
-        const activeLink = document.querySelector(`#mainNav .nav-link[href="#${sectionId}"]`);
-        if (activeLink) {
-          activeLink.classList.add('active');
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.getAttribute('id');
+          
+          // Remove active class from all links
+          navLinks.forEach((link) => link.classList.remove('active'));
+          
+          // Add active class to current section link - match both hash-only and full URL with hash
+          const activeLink = document.querySelector(`#mainNav .nav-link[href*="#${sectionId}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+          }
         }
-      }
+      });
+    };
+
+    const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((section) => {
+      sectionObserver.observe(section);
     });
-  };
+  }
 
-  const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
-
-  sections.forEach((section) => {
-    sectionObserver.observe(section);
-  });
-
-  // Smooth scroll on nav link click
+  // Smooth scroll on nav link click - only for hash links
   navLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetId = link.getAttribute('href');
-      const targetSection = document.querySelector(targetId);
+      const href = link.getAttribute('href');
       
-      if (targetSection) {
-        const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
-        window.scrollTo({
-          top: offsetTop,
-          behavior: 'smooth',
-        });
+      // Only handle hash links that don't navigate to different pages
+      if (href && href.includes('#') && !href.includes('?page=')) {
+        e.preventDefault();
+        
+        // Extract hash from href (could be "#section" or "...#section")
+        const hash = href.substring(href.indexOf('#'));
+        const targetSection = document.querySelector(hash);
+        
+        if (targetSection) {
+          const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          });
+        }
       }
     });
   });

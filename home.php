@@ -1,6 +1,7 @@
 <!-- ============================================ -->
 <!-- MODERN SINGLE-PAGE HOMEPAGE -->
 <!-- ============================================ -->
+</div><!-- Close index.php container to allow full-width sections -->
 
 <!-- Hero Section with Swiper Carousel -->
 <section id="home" class="hero-section">
@@ -602,4 +603,8 @@
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
     </div>
+</div>
+
+<!-- Reopen container for index.php structure -->
+<div class="container d-none">
 </div>

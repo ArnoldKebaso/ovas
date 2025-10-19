@@ -95,7 +95,7 @@
   if (sections.length > 0) {
     const observerOptions = {
       root: null,
-      rootMargin: '-50% 0px -50% 0px',
+      rootMargin: '-20% 0px -60% 0px', // Trigger when section is 20% from top
       threshold: 0,
     };
 
@@ -127,21 +127,38 @@
   navLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
       const href = link.getAttribute('href');
+      const dataSection = link.getAttribute('data-section');
       
-      // Only handle hash links that don't navigate to different pages
-      if (href && href.includes('#') && !href.includes('?page=')) {
-        e.preventDefault();
+      // Handle section links (hash anchors)
+      if (href && href.startsWith('#')) {
+        // Check if we're on the homepage
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page') || 'home';
         
-        // Extract hash from href (could be "#section" or "...#section")
-        const hash = href.substring(href.indexOf('#'));
-        const targetSection = document.querySelector(hash);
-        
-        if (targetSection) {
-          const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
-          window.scrollTo({
-            top: offsetTop,
-            behavior: 'smooth',
-          });
+        if (currentPage === 'home' || !urlParams.has('page')) {
+          // We're on homepage, smooth scroll to section
+          e.preventDefault();
+          const targetSection = document.querySelector(href);
+          
+          if (targetSection) {
+            const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth',
+            });
+            
+            // Close mobile menu if open
+            const navbarCollapse = document.getElementById('navbarCollapse');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+              const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                toggle: false
+              });
+              bsCollapse.hide();
+            }
+          }
+        } else {
+          // We're on another page, navigate to homepage with hash
+          window.location.href = `./?page=home${href}`;
         }
       }
     });
@@ -150,6 +167,39 @@
   // Handle scroll events
   window.addEventListener('scroll', handleNavbarScroll, { passive: true });
   handleNavbarScroll(); // Initial check
+
+  // ============================================
+  // Footer Section Links
+  // ============================================
+  const footerSectionLinks = document.querySelectorAll('.footer-section-link');
+  
+  footerSectionLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      
+      if (href && href.startsWith('#')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page') || 'home';
+        
+        if (currentPage === 'home' || !urlParams.has('page')) {
+          // We're on homepage, smooth scroll to section
+          e.preventDefault();
+          const targetSection = document.querySelector(href);
+          
+          if (targetSection) {
+            const offsetTop = targetSection.offsetTop - 80;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth',
+            });
+          }
+        } else {
+          // We're on another page, navigate to homepage with hash
+          window.location.href = `./?page=home${href}`;
+        }
+      }
+    });
+  });
 
   // ============================================
   // Counter Animation (KPIs)

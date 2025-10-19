@@ -29,19 +29,19 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mx-auto">
         <li class="nav-item">
-          <a href="./?page=home" class="nav-link active fw-semibold">Home</a>
+          <a href="./?page=home" class="nav-link active fw-semibold" data-page="home">Home</a>
         </li>
         <li class="nav-item">
-          <a href="./?page=services" class="nav-link fw-semibold">Services</a>
+          <a href="./?page=services" class="nav-link fw-semibold" data-page="services">Services</a>
         </li>
         <li class="nav-item">
-          <a href="./?page=home#appointment" class="nav-link fw-semibold">Book Appointment</a>
+          <a href="#appointment" class="nav-link fw-semibold" data-section="appointment">Book Appointment</a>
         </li>
         <li class="nav-item">
-          <a href="./?page=home#about" class="nav-link fw-semibold">About Us</a>
+          <a href="#about" class="nav-link fw-semibold" data-section="about">About Us</a>
         </li>
         <li class="nav-item">
-          <a href="./?page=home#contact" class="nav-link fw-semibold">Contact</a>
+          <a href="#contact" class="nav-link fw-semibold" data-section="contact">Contact</a>
         </li>
         <?php if($_settings->userdata('id') > 0 && $_settings->userdata('login_type') != 1): ?>
         <li class="nav-item">

@@ -1,258 +1,186 @@
 <?php
-// Safe fallbacks from System Settings
-$short_name = $_settings->info('short_name') ?? 'VAP';
-$sys_name   = $_settings->info('name') ?? 'Veterinary Appointment System';
-$address    = $_settings->info('address') ?? 'Nairobi';
-$email      = $_settings->info('email') ?? 'pet@gmail.com';
-$phone      = $_settings->info('contact') ?? '07123456789';
-$year       = date('Y');
-
-// Optional logo path from settings (fallback to uploads)
-$logo = $_settings->info('logo') ?? 'uploads/logo-1641262650.png';
+// footer.php — Drop-in replacement
+// Values below can be pulled from your settings if you have them.
+// For now, they’re simple PHP fallbacks you can change anytime.
+$brand      = isset($_settings) ? ($_settings->info('short_name') ?: 'VAP') : 'OVAS';
+$phone      = isset($_settings) ? ($_settings->info('contact')     ?: '07123456789') : '07123456789';
+$email      = isset($_settings) ? ($_settings->info('email')       ?: 'clinic@example.com') : 'clinic@example.com';
+$address    = isset($_settings) ? ($_settings->info('address')     ?: 'Nairobi, Kenya') : 'Nairobi, Kenya';
+$hours_line1= 'Mon – Sat: 8:00 AM – 6:00 PM';
+$hours_line2= 'Sunday: Emergency Only';
 ?>
+<style>
+/*** ===== Site Footer (scoped) ===== ***/
+.site-footer{position:relative; color:#eaf0ff; background:radial-gradient(1200px 700px at 10% -10%, #1649ff22, transparent), linear-gradient(180deg, #091b3a 0%, #07162f 100%);}
+.site-footer .container{max-width:1200px; margin:0 auto; padding: clamp(28px, 6vw, 72px) 16px;}
+.site-footer a{color:#eaf0ff; text-decoration:none}
+.site-footer a:hover{opacity:.9; text-decoration:underline}
 
-<footer class="ovas-footer text-light mt-auto">
-  <div class="ovas-footer__top">
-    <div class="container">
-      <div class="row g-4 justify-content-between">
-        <!-- Brand / About -->
-        <div class="col-12 col-lg-4">
-          <div class="d-flex align-items-center gap-3 mb-3">
-            <img src="<?php echo base_url.$logo; ?>" alt="<?php echo htmlspecialchars($short_name); ?> logo" class="ovas-footer__logo">
-            <h5 class="mb-0"><?php echo htmlspecialchars($short_name); ?></h5>
-          </div>
-          <p class="text-opacity-75 mb-4">
-            Professional veterinary care for your beloved pets.
-            We provide comprehensive health services with compassion and expertise.
-          </p>
+/* top grid */
+.footer-grid{display:grid; grid-template-columns: 1.2fr 1fr 1fr 1.2fr; gap: clamp(18px, 2.8vw, 34px);}
+@media (max-width: 980px){ .footer-grid{grid-template-columns:1fr 1fr} }
+@media (max-width: 640px){ .footer-grid{grid-template-columns:1fr} }
 
-          <div class="d-flex gap-2">
-            <!-- Social buttons (free, CDN SVGs from SimpleIcons) -->
-            <a class="ovas-social" href="#" aria-label="Facebook">
-              <img src="https://cdn.simpleicons.org/facebook/ffffff" alt="Facebook" width="18" height="18">
-            </a>
-            <a class="ovas-social" href="#" aria-label="Instagram">
-              <img src="https://cdn.simpleicons.org/instagram/ffffff" alt="Instagram" width="18" height="18">
-            </a>
-            <a class="ovas-social" href="#" aria-label="X">
-              <img src="https://cdn.simpleicons.org/x/ffffff" alt="X (Twitter)" width="18" height="18">
-            </a>
-            <a class="ovas-social" href="#" aria-label="WhatsApp">
-              <img src="https://cdn.simpleicons.org/whatsapp/ffffff" alt="WhatsApp" width="18" height="18">
-            </a>
-          </div>
+/* brand */
+.brand-wrap h3{margin:0 0 8px; font-size:22px; font-weight:900; letter-spacing:.3px}
+.brand-wrap p{margin:0; color:#cfe1ff; line-height:1.6}
+.logo-badge{display:inline-flex; align-items:center; gap:10px; padding:8px 12px; background:#0f2b63; border:1px solid #25407a; border-radius:999px; margin-bottom:10px; box-shadow:inset 0 0 0 1px #1b3a74}
+.logo-dot{width:26px; height:26px; border-radius:8px; background:linear-gradient(135deg,#2f65f6,#22c1c3); display:grid; place-items:center; font-weight:900}
+
+/* titles */
+.ft-title{margin:0 0 8px; font-size:14px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:#cfe1ff}
+.ft-underline{width:48px; height:3px; background:linear-gradient(90deg,#2f65f6,#22c1c3); border-radius:99px; margin:6px 0 14px}
+
+/* lists */
+.ft-list{list-style:none; padding:0; margin:0}
+.ft-list li{margin:8px 0}
+.ft-list a{color:#eaf0ff; text-decoration:none}
+.ft-list a:hover{opacity:.9}
+
+/* service columns pairing */
+.cols-2{display:grid; grid-template-columns:1fr 1fr; gap:6px 28px}
+@media (max-width:640px){ .cols-2{grid-template-columns:1fr} }
+
+/* contact lines */
+.contact-line{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-top:1px dashed #244269}
+.contact-line:first-child{border-top:0}
+.icon{width:18px; margin-top:2px; color:#9fc2ff}
+
+/* socials */
+.socials{display:flex; gap:12px; margin-top:12px}
+.soc{width:38px; height:38px; border-radius:12px; display:grid; place-items:center; color:#eaf0ff; background:#0f2b63; border:1px solid #25407a; transition:.2s}
+.soc:hover{transform:translateY(-2px); background:#153478}
+
+/* bottom bar */
+.footer-bottom{border-top:1px solid #112448; margin-top: clamp(18px, 3.4vw, 40px);}
+.bottom-row{display:flex; gap:14px; align-items:center; justify-content:space-between; padding:16px 0}
+.bottom-links{display:flex; gap:16px; flex-wrap:wrap}
+.badge-mini{display:inline-flex; align-items:center; gap:8px; background:#0f2b63; border:1px solid #25407a; padding:6px 10px; border-radius:999px; color:#cfe1ff}
+
+/* small helper */
+.muted{color:#cfe1ff; opacity:.9}
+</style>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Brand / About -->
+      <div class="brand-wrap">
+        <div class="logo-badge"><span class="logo-dot">🐾</span> <strong><?php echo htmlspecialchars($brand) ?></strong></div>
+        <p>Professional veterinary care for your beloved pets. We provide comprehensive health services with compassion and expertise.</p>
+        <div class="socials">
+          <a class="soc" href="#" aria-label="Facebook" title="Facebook">
+            <!-- fb -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 20v-7h2.5l.5-3h-3V8.1c0-.9.3-1.5 1.6-1.5H17V4.1C16.6 4.1 15.7 4 14.7 4 12.4 4 11 5.2 11 7.7V10H8.5v3H11v7h2.5z"/></svg>
+          </a>
+          <a class="soc" href="#" aria-label="Instagram" title="Instagram">
+            <!-- ig -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11zm0 2a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm5.8-.9a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+          </a>
+          <a class="soc" href="#" aria-label="X / Twitter" title="X">
+            <!-- x -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3l7.2 9.1L4.6 21h2.4l5.7-6.8 4.6 6.8H20l-7.3-10L19.4 3h-2.4l-5 6-4.1-6H4z"/></svg>
+          </a>
+          <a class="soc" href="#" aria-label="WhatsApp" title="WhatsApp">
+            <!-- wa -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 12a8 8 0 0 1-12 6.9L4 20l1.1-3.9A8 8 0 1 1 20 12zm-8-6a6 6 0 0 0-5.2 9l-.7 2.5 2.6-.7A6 6 0 1 0 12 6zm3.7 8.5c-.1.2-.6.4-.8.5-.2 0-.3.1-.5 0s-.4 0-.6-.1a9 9 0 0 1-3.2-2 8.6 8.6 0 0 1-2-3.2c0-.2 0-.4.1-.6l.3-.5c.1-.2.3-.4.5-.3h.6c.1 0 .5.1.5.4l.4 1c.1.2.1.4 0 .6l-.2.3-.2.3v.2c0 .1 0 .1.1.3l.3.4.4.4.4.3.3.1h.2c.1 0 .2 0 .3-.2l.4-.4c.1-.1.2-.1.3-.1h.5l.9.4c.2.1.3.2.3.3l.1.6z"/></svg>
+          </a>
         </div>
-
-        <!-- Quick Links -->
-        <div class="col-6 col-lg-2">
-          <h6 class="ovas-footer__title">Quick Links</h6>
-          <ul class="ovas-links">
-            <li><a href="<?php echo base_url ?>?page=home">Home</a></li>
-            <li><a href="<?php echo base_url ?>?page=services">Services</a></li>
-            <li><a href="<?php echo base_url ?>?page=appointment">Book Appointment</a></li>
-            <li><a href="<?php echo base_url ?>?page=about_us">About Us</a></li>
-            <li><a href="<?php echo base_url ?>?page=contact_us">Contact</a></li>
-          </ul>
-        </div>
-
-        <!-- Our Services -->
-        <div class="col-6 col-lg-3">
-          <h6 class="ovas-footer__title">Our Services</h6>
-          <ul class="ovas-links ovas-links--two">
-            <li><a href="<?php echo base_url ?>?page=services#vaccination">Vaccination</a></li>
-            <li><a href="<?php echo base_url ?>?page=services#deworming">Deworming</a></li>
-            <li><a href="<?php echo base_url ?>?page=services#grooming">Grooming</a></li>
-            <li><a href="<?php echo base_url ?>?page=services#dental">Dental Care</a></li>
-            <li><a href="<?php echo base_url ?>?page=services#surgery">Surgery</a></li>
-          </ul>
-        </div>
-
-        <!-- Contact Info -->
-        <div class="col-12 col-lg-3">
-          <h6 class="ovas-footer__title">Contact Info</h6>
-          <ul class="ovas-contact list-unstyled">
-            <li>
-              <span class="ovas-contact__label">Address</span>
-              <span class="ovas-contact__value"><?php echo htmlspecialchars($address); ?></span>
-            </li>
-            <li>
-              <span class="ovas-contact__label">Phone</span>
-              <a class="ovas-contact__value" href="tel:<?php echo preg_replace('/\\D+/', '', $phone); ?>">
-                <?php echo htmlspecialchars($phone); ?>
-              </a>
-            </li>
-            <li>
-              <span class="ovas-contact__label">Email</span>
-              <a class="ovas-contact__value" href="mailto:<?php echo htmlspecialchars($email); ?>">
-                <?php echo htmlspecialchars($email); ?>
-              </a>
-            </li>
-            <li class="mt-2">
-              <span class="ovas-contact__label">Hours</span>
-              <span class="ovas-contact__value">Mon – Sat: 8:00 AM – 6:00 PM<br>Sunday: Emergency Only</span>
-            </li>
-          </ul>
-        </div>
-      </div> <!-- /row -->
-    </div>
-  </div>
-
-  <div class="ovas-footer__bottom">
-    <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
-      <div class="small text-opacity-75">
-        © <?php echo $year; ?> <?php echo htmlspecialchars(trim($sys_name)); ?>. All rights reserved.
       </div>
-      <div class="d-flex align-items-center gap-3 small">
-        <a class="ovas-policy" href="#">Privacy Policy</a>
-        <span class="text-opacity-50">•</span>
-        <a class="ovas-policy" href="#">Terms of Service</a>
-        <span class="text-opacity-50">•</span>
-        <a class="ovas-policy" href="<?php echo base_url ?>admin" target="_blank" rel="noopener">Admin</a>
+
+      <!-- Quick Links -->
+      <div>
+        <h4 class="ft-title">Quick Links</h4>
+        <div class="ft-underline"></div>
+        <ul class="ft-list">
+          <li><a href="?page=home">Home</a></li>
+          <li><a href="?page=services">Services</a></li>
+          <li><a href="?page=book_appointment">Book Appointment</a></li>
+          <li><a href="?page=about_us">About Us</a></li>
+          <li><a href="?page=contact_us">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Our Services -->
+      <div>
+        <h4 class="ft-title">Our Services</h4>
+        <div class="ft-underline"></div>
+        <div class="cols-2">
+          <ul class="ft-list">
+            <li><a href="?page=services#vaccination">Vaccination</a></li>
+            <li><a href="?page=services#grooming">Grooming</a></li>
+            <li><a href="?page=services#surgery">Surgery</a></li>
+          </ul>
+          <ul class="ft-list">
+            <li><a href="?page=services#deworming">Deworming</a></li>
+            <li><a href="?page=services#dental">Dental Care</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div>
+        <h4 class="ft-title">Contact Info</h4>
+        <div class="ft-underline"></div>
+
+        <div class="contact-line">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#9fc2ff"><path d="M12 2l9 7v13h-6v-7H9v7H3V9l9-7z"/></svg>
+          </span>
+          <div>
+            <div class="muted">Address</div>
+            <strong><?php echo htmlspecialchars($address) ?></strong>
+          </div>
+        </div>
+
+        <div class="contact-line">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#9fc2ff"><path d="M6.6 10.8a15.7 15.7 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.4.6 3.7.6.6 0 1 .4 1 1v3.6c0 .6-.4 1-1 1A18.9 18.9 0 0 1 3 5c0-.6.4-1 1-1h3.6c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.7.1.4 0 .8-.3 1.1l-2.3 2z"/></svg>
+          </span>
+          <div>
+            <div class="muted">Phone</div>
+            <a href="tel:<?php echo preg_replace('/\s+/', '', $phone) ?>"><?php echo htmlspecialchars($phone) ?></a>
+          </div>
+        </div>
+
+        <div class="contact-line">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#9fc2ff"><path d="M12 13L2 6V5l10 7 10-7v1l-10 7z"/><path d="M2 7v12h20V7l-10 7L2 7z"/></svg>
+          </span>
+          <div>
+            <div class="muted">Email</div>
+            <a href="mailto:<?php echo htmlspecialchars($email) ?>"><?php echo htmlspecialchars($email) ?></a>
+          </div>
+        </div>
+
+        <div class="contact-line">
+          <span class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#9fc2ff"><path d="M12 7V3M12 21v-4M7 12H3m18 0h-4M5.6 5.6l2.8 2.8m7.2 7.2 2.8 2.8M5.6 18.4l2.8-2.8m7.2-7.2 2.8-2.8"/></svg>
+          </span>
+          <div>
+            <div class="muted">Hours</div>
+            <div><?php echo $hours_line1 ?></div>
+            <div><?php echo $hours_line2 ?></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="footer-bottom">
+      <div class="bottom-row">
+        <div class="badge-mini">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#9fc2ff" aria-hidden="true"><path d="M12 2a10 10 0 1 0 .001 20.001A10 10 0 0 0 12 2zm1 11h5v2h-7V7h2v6z"/></svg>
+          <span id="year"><?php echo date('Y') ?></span> © <?php echo htmlspecialchars($brand) ?>. All rights reserved.
+        </div>
+        <div class="bottom-links">
+          <a href="?page=privacy">Privacy</a>
+          <span>•</span>
+          <a href="?page=terms">Terms</a>
+          <span>•</span>
+          <a href="?page=contact_us">Support</a>
+        </div>
       </div>
     </div>
   </div>
 </footer>
-<style>
- /* ===== OVAS Footer ===== */
-.ovas-footer{
-  --footer-bg: #0f172a;      /* slate-900 */
-  --footer-bg-grad: radial-gradient(1200px 600px at 20% -10%, rgba(37,99,235,.15), transparent),
-                     radial-gradient(900px 500px at 80% 10%, rgba(16,185,129,.12), transparent);
-  --footer-text: #e5e7eb;    /* gray-200 */
-  --footer-muted: #94a3b8;   /* slate-400 */
-  --footer-border: rgba(148,163,184,.15);
-
-  color: var(--footer-text);
-  background: var(--footer-bg);
-  position: relative;
-}
-
-.ovas-footer__top{
-  padding: 56px 0 28px;
-  background-image: var(--footer-bg-grad);
-  border-top: 1px solid var(--footer-border);
-}
-
-.ovas-footer__bottom{
-  padding: 16px 0 20px;
-  border-top: 1px solid var(--footer-border);
-  background: rgba(2,6,23,.35);
-  backdrop-filter: saturate(120%) blur(6px);
-}
-
-/* Brand */
-.ovas-footer__logo{
-  width: 44px; height: 44px;
-  object-fit: contain;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  padding: 6px;
-}
-
-/* Column headings */
-.ovas-footer__title{
-  font-weight: 600;
-  letter-spacing: .2px;
-  margin-bottom: 14px;
-  position: relative;
-}
-.ovas-footer__title::after{
-  content:"";
-  display:block;
-  width:36px; height:3px;
-  border-radius: 6px;
-  margin-top: 8px;
-  background: linear-gradient(90deg,#22d3ee,#22c55e);
-}
-
-/* Link lists */
-.ovas-links{
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  /* Perfect vertical rhythm */
-  display: grid;
-  gap: 10px;
-}
-.ovas-links--two{
-  grid-template-columns: 1fr;
-}
-@media (min-width: 992px){
-  .ovas-links--two{
-    grid-template-columns: repeat(2,minmax(0,1fr));
-    column-gap: 16px;
-  }
-}
-
-.ovas-links a{
-  color: var(--footer-text);
-  text-decoration: none;
-  opacity: .8;
-  transition: color .2s ease, opacity .2s ease, transform .2s ease;
-}
-.ovas-links a:hover{
-  color: #93c5fd; /* light blue */
-  opacity: 1;
-  transform: translateX(2px);
-}
-
-/* Contact info */
-.ovas-contact li{
-  padding: 8px 0;
-  border-bottom: 1px dashed var(--footer-border);
-}
-.ovas-contact li:last-child{ border-bottom: 0; }
-.ovas-contact__label{
-  display:block;
-  font-size: .8rem;
-  color: var(--footer-muted);
-}
-.ovas-contact__value{
-  color: var(--footer-text);
-  text-decoration: none;
-  word-break: break-word;
-}
-.ovas-contact a.ovas-contact__value:hover{ color:#93c5fd; }
-
-/* Social buttons */
-.ovas-social{
-  --size: 40px;
-  width: var(--size);
-  height: var(--size);
-  display: inline-flex;
-  align-items: center;
-  padding: 8px;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid var(--footer-border);
-  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
-}
-.ovas-social img{ display:block; }
-.ovas-social:hover{
-  transform: translateY(-2px) scale(1.03);
-  background: linear-gradient(135deg, rgba(59,130,246,.25), rgba(16,185,129,.25));
-  box-shadow: 0 10px 18px rgba(2,6,23,.35);
-}
-
-/* Policy links */
-.ovas-policy{
-  color: var(--footer-text);
-  opacity: .8;
-  text-decoration: none;
-  transition: opacity .2s ease, color .2s ease;
-}
-.ovas-policy:hover{
-  opacity: 1;
-  color: #93c5fd;
-}
-
-/* Spacing helpers (footer context) */
-.ovas-footer p{ margin-bottom: 0; }
-.ovas-footer .text-opacity-75{ color: rgba(229,231,235,.75) !important; }
-.ovas-footer .text-opacity-50{ color: rgba(229,231,235,.5) !important; }
-
-/* Tighter on phones */
-@media (max-width: 575.98px){
-  .ovas-footer__top{ padding: 40px 0 20px; }
-}

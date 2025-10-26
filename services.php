@@ -1,809 +1,283 @@
-<!-- ============================================ -->
-<!-- MODERN SERVICES PAGE -->
-<!-- ============================================ -->
-</div><!-- Close index.php container to allow full-width sections -->
+<?php
+// SERVICES PAGE — Clean Drop-in (mock data, clickable filters, fixed hero spacing)
+// Uses $_settings if present, safe fallbacks otherwise.
 
+$short_name = isset($_settings) ? ($_settings->info('short_name') ?: 'VAP') : 'VAP';
+$phone      = isset($_settings) ? ($_settings->info('contact')     ?: '07123456789') : '07123456789';
+$base_url   = './';
+
+/* ---------- Mock Data (swap to DB later) ---------- */
+$services = [
+  [
+    'id'=>101,
+    'name'=>'Vaccination',
+    'description'=>'Tailored immunization schedules for puppies, kittens, and adult pets.',
+    'price'=>500.00,
+    'duration'=>'30–60 min',
+    'tags'=>'dogs,cats',
+    'image'=>'https://images.unsplash.com/photo-1600959907703-125ba1374a12?q=80&w=1600&auto=format&fit=crop'
+  ],
+  [
+    'id'=>102,
+    'name'=>'Deworming',
+    'description'=>'Routine internal parasite control plans to keep your pet healthy.',
+    'price'=>250.00,
+    'duration'=>'15–30 min',
+    'tags'=>'dogs,cats,rabbits',
+    'image'=>'https://images.unsplash.com/photo-1518378188025-22bd89516ee2?q=80&w=1600&auto=format&fit=crop'
+  ],
+  [
+    'id'=>103,
+    'name'=>'Dental Care',
+    'description'=>'Complete oral health and dental cleaning with gentle anesthesia.',
+    'price'=>1700.00,
+    'duration'=>'60–90 min',
+    'tags'=>'cats,dogs',
+    'image'=>'https://images.unsplash.com/photo-1601758064134-0c3ce3a356b5?q=80&w=1600&auto=format&fit=crop'
+  ],
+  [
+    'id'=>104,
+    'name'=>'Grooming',
+    'description'=>'Professional grooming, bathing, nail trimming, and fur styling.',
+    'price'=>1500.00,
+    'duration'=>'60–90 min',
+    'tags'=>'dogs',
+    'image'=>'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop'
+  ],
+  [
+    'id'=>105,
+    'name'=>'Diagnostics',
+    'description'=>'In-house lab tests and imaging for fast, accurate results.',
+    'price'=>1000.00,
+    'duration'=>'—',
+    'tags'=>'birds,cats,dogs',
+    'image'=>'https://images.unsplash.com/photo-1581594693700-89e55f19ef8f?q=80&w=1600&auto=format&fit=crop'
+  ],
+  [
+    'id'=>106,
+    'name'=>'Pet Boarding',
+    'description'=>'Safe, comfortable, supervised stays while you’re away.',
+    'price'=>900.00,
+    'duration'=>'overnight',
+    'tags'=>'dogs,cats',
+    'image'=>'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1600&auto=format&fit=crop'
+  ],
+];
+
+$IMG_FALLBACK = 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1600&auto=format&fit=crop';
+?>
 <style>
-    /* Services Page Specific Styles */
-    .services-hero {
-        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-        padding: 4rem 0 3rem;
-        margin-top: -20px;
-    }
-    
-    .search-bar-container {
-        background: white;
-        border-radius: 50px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        padding: 0.5rem;
-    }
-    
-    .filter-chip {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.5rem 1.25rem;
-        border-radius: 50px;
-        border: 2px solid #e2e8f0;
-        background: white;
-        color: #64748b;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin: 0.25rem;
-    }
-    
-    .filter-chip:hover {
-        border-color: #2563eb;
-        color: #2563eb;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
-    }
-    
-    .filter-chip.active {
-        background: linear-gradient(135deg, #2563eb, #10b981);
-        color: white;
-        border-color: transparent;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    }
-    
-    .filter-chip i {
-        margin-right: 0.5rem;
-    }
-    
-    .service-card {
-        position: relative;
-        border: none;
-        border-radius: 1rem;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        height: 100%;
-    }
-    
-    .service-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-    }
-    
-    .service-card-image {
-        height: 200px;
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .service-card-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    
-    .service-card:hover .service-card-image img {
-        transform: scale(1.1);
-    }
-    
-    .service-card-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        padding: 0.5rem 1rem;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 0.875rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .service-icon-badge {
-        position: absolute;
-        bottom: -25px;
-        left: 1.5rem;
-        width: 60px;
-        height: 60px;
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        z-index: 10;
-    }
-    
-    .service-card-body {
-        padding: 2.5rem 1.5rem 1.5rem;
-    }
-    
-    .pet-type-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 1rem;
-    }
-    
-    .pet-tag {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.25rem 0.75rem;
-        background: #f1f5f9;
-        border-radius: 50px;
-        font-size: 0.75rem;
-        color: #64748b;
-    }
-    
-    .pet-tag i {
-        margin-right: 0.25rem;
-        font-size: 0.7rem;
-    }
-    
-    /* Modal Styles */
-    .service-modal .modal-content {
-        border-radius: 1.5rem;
-        border: none;
-        overflow: hidden;
-    }
-    
-    .service-modal .modal-header {
-        background: linear-gradient(135deg, #2563eb, #10b981);
-        color: white;
-        padding: 2rem;
-        border: none;
-    }
-    
-    .service-modal .modal-body {
-        padding: 2rem;
-    }
-    
-    .appointment-quick-form {
-        background: #f8fafc;
-        border-radius: 1rem;
-        padding: 2rem;
-        margin-top: 2rem;
-    }
-    
-    .price-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #2563eb;
-    }
-    
-    .price-tag small {
-        font-size: 1rem;
-        font-weight: 400;
-        color: #64748b;
-    }
-    
-    .feature-list {
-        list-style: none;
-        padding: 0;
-    }
-    
-    .feature-list li {
-        padding: 0.75rem 0;
-        display: flex;
-        align-items: center;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .feature-list li:last-child {
-        border-bottom: none;
-    }
-    
-    .feature-list li i {
-        color: #10b981;
-        margin-right: 0.75rem;
-        font-size: 1.25rem;
-    }
-    
-    .view-count {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: #64748b;
-        font-size: 0.875rem;
-    }
+  :root{
+    --brand:#2563eb; --brand2:#22c1c3; --text:#0f172a; --muted:#64748b;
+    --bg:#f5f7fb; --card:#ffffff; --border:#e6edf7;
+    --ring:0 10px 28px rgba(37,99,235,.15); --ring-soft:0 8px 20px rgba(2,6,23,.06);
+    --radius:20px;
+  }
+  .page{background:#fff;}
+
+  /* ===== HERO (no overlap, fixed spacing) ===== */
+  .hero-wrap{ position:relative; background:#fff; }
+  .hero-cover{
+    height: 44vh; min-height:360px; max-height:560px;
+    background-image:url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1600&auto=format&fit=crop');
+    background-size:cover; background-position:center;
+    filter:saturate(1.04);
+  }
+  .hero-scrim{ position:absolute; inset:0; background: radial-gradient(1000px 520px at 20% 40%, rgba(0,0,0,.35), rgba(0,0,0,.55)); mix-blend-multiply; }
+  .hero-inner{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding: clamp(18px, 4vw, 48px); }
+  .hero-card{ width:min(1180px, 96%); color:#fff; display:grid; grid-template-columns: 1.2fr .8fr; gap:20px; }
+  @media (max-width: 980px){ .hero-card{ grid-template-columns:1fr; } }
+  .hero-copy h1{ margin:0 0 8px; font-size: clamp(30px, 4.6vw, 56px); line-height:1.08; font-weight:800; text-shadow: 0 1px 12px rgba(0,0,0,.25); }
+  .hero-copy p{ margin:8px 0 16px; color:#eaf2ff; font-size: clamp(15px, 1.6vw, 18px); }
+  .hero-badges{ display:flex; gap:12px; flex-wrap:wrap; }
+  .badge{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background: rgba(255,255,255,.16); backdrop-filter: blur(4px); font-weight:700; }
+
+  /* ===== BELOW HERO: clear separation ===== */
+  .controls-wrap{ position:relative; z-index:2; background:#fff; }
+  .controls-inner{ max-width:1180px; margin: 0 auto; padding: 0 16px; transform: translateY(-26px); }
+  .search-bar{
+    background:#fff; border:1px solid var(--border); border-radius: 999px; padding: 10px;
+    display:flex; gap:8px; box-shadow: 0 12px 36px rgba(0,0,0,.08); align-items:center;
+  }
+  .search-bar input{ flex:1; border:0; outline:none; padding:10px 12px; font-size:16px; border-radius:999px; }
+  .btn{ display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 16px; border:0; cursor:pointer; font-weight:700; }
+  .btn-primary{ background: var(--brand); color:#fff; box-shadow: var(--ring); }
+  .chip-row{ display:flex; gap:10px; flex-wrap:wrap; padding: 10px 4px 0; }
+  .btn-chip{
+    border:1px solid var(--border); background:#fff; color:#1f2937; padding:8px 12px; border-radius:999px; font-weight:600;
+    box-shadow: var(--ring-soft); transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+    cursor:pointer;
+  }
+  .btn-chip:hover{ transform: translateY(-2px); box-shadow: 0 16px 28px rgba(31,41,55,.08); }
+  .btn-chip.active{ background:#ecf3ff; border-color:#cfe0ff; }
+
+  /* ===== GRID ===== */
+  .section{ padding: 8px 16px 48px; }
+  .container{ max-width:1180px; margin:0 auto; }
+
+  .grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; }
+  @media (max-width:1100px){ .grid{ grid-template-columns: repeat(2,1fr);} }
+  @media (max-width:720px){ .grid{ grid-template-columns: 1fr;} }
+
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius: var(--radius); overflow:hidden;
+    box-shadow: var(--ring-soft); transition: transform .16s ease, box-shadow .22s ease;
+    display:flex; flex-direction:column; /* keep consistent height */
+  }
+  .card:hover{ transform: translateY(-6px); box-shadow: 0 22px 38px rgba(31,41,55,.1); }
+
+  .cover{ position:relative; aspect-ratio: 16/9; background:#eef2f9; }
+  .cover img{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(1.05); }
+  .price-badge{
+    position:absolute; top:14px; right:14px; background:#fff; color:#2563eb; font-weight:800;
+    border-radius:14px; padding:6px 10px; box-shadow: var(--ring-soft);
+  }
+  .body{ display:flex; flex-direction:column; gap:10px; padding: 14px 16px 16px; flex:1; }
+  .title{ margin:0; font-size:18px; font-weight:800; color:var(--text); }
+  .desc{ color:var(--muted); font-size:14.5px; min-height: 46px; }
+  .meta{ display:flex; gap:10px; flex-wrap:wrap; margin-top:2px; }
+  .pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border:1px solid var(--border); border-radius:999px; font-size:12.5px; color:#475569; background:#fff; }
+
+  .actions{ margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .link{ display:inline-flex; align-items:center; gap:6px; color:#334155; font-weight:700; text-decoration:none; }
+  .link:hover{ color:#111827; }
+  .cta{ display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:10px 16px; border:0; cursor:pointer; font-weight:700; background: var(--brand); color:#fff; box-shadow: var(--ring); }
+
+  /* Reveal animation */
+  .reveal{ opacity:0; transform: translateY(12px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.show{ opacity:1; transform:none; }
+
+  .empty{ text-align:center; color:#64748b; padding:32px 8px; }
 </style>
 
-<!-- Services Hero Section -->
-<section class="services-hero">
+<div class="page">
+  <!-- ============== HERO ============== -->
+  <section class="hero-wrap">
+    <div class="hero-cover"></div>
+    <div class="hero-scrim"></div>
+    <div class="hero-inner">
+      <div class="hero-card">
+        <div class="hero-copy reveal">
+          <h1>Our Veterinary Services</h1>
+          <p>Comprehensive care for your beloved pets. Expert veterinarians, modern equipment, and compassionate service.</p>
+          <div class="hero-badges">
+            <span class="badge">50+ Services</span>
+            <span class="badge">10 Specialists</span>
+            <span class="badge">24/7 Emergency</span>
+          </div>
+        </div>
+        <div class="reveal" style="align-self:flex-end;">
+          <div class="badge" style="background:rgba(255,255,255,.22)">☎ Emergency: <?php echo htmlspecialchars($phone) ?></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== CONTROLS (separate layer so no merge) ============== -->
+  <div class="controls-wrap">
+    <div class="controls-inner">
+      <div class="search-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#64748b" stroke-width="2"/><path d="M21 21l-4-4" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="searchInput" type="text" placeholder="Search services (e.g., vaccination, grooming, dental)…" />
+        <button class="btn btn-primary" id="btnSearch">Search</button>
+      </div>
+      <div class="chip-row" id="chipRow">
+        <button type="button" class="btn-chip active" data-chip="all">All Services</button>
+        <button type="button" class="btn-chip" data-chip="birds">Birds</button>
+        <button type="button" class="btn-chip" data-chip="cats">Cats</button>
+        <button type="button" class="btn-chip" data-chip="dogs">Dogs</button>
+        <button type="button" class="btn-chip" data-chip="rabbits">Rabbits</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== GRID ============== -->
+  <section class="section">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 text-white" data-aos="fade-right">
-                <h1 class="display-4 fw-bold mb-3">Our Veterinary Services</h1>
-                <p class="lead mb-4">Comprehensive care for your beloved pets. Expert veterinarians, modern equipment, and compassionate service.</p>
-                <div class="d-flex gap-3">
-                    <div class="text-center">
-                        <div class="h2 fw-bold mb-0">50+</div>
-                        <small>Services</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="h2 fw-bold mb-0">10</div>
-                        <small>Specialists</small>
-                    </div>
-                    <div class="text-center">
-                        <div class="h2 fw-bold mb-0">24/7</div>
-                        <small>Emergency</small>
-                    </div>
-                </div>
+      <div class="grid" id="cardsGrid">
+        <?php foreach($services as $svc):
+          $tags = strtolower($svc['tags']);
+          $img  = $svc['image'] ?: $IMG_FALLBACK;
+          $price = $svc['price'];
+        ?>
+        <article class="card reveal"
+                 data-tags="<?php echo htmlspecialchars($tags) ?>"
+                 data-title="<?php echo htmlspecialchars(strtolower($svc['name'].' '.$svc['description'])) ?>">
+          <div class="cover">
+            <img loading="lazy" src="<?php echo $img ?>"
+                 alt="<?php echo htmlspecialchars($svc['name']) ?>"
+                 onerror="this.onerror=null;this.src='<?php echo $IMG_FALLBACK ?>';">
+            <?php if(is_numeric($price)): ?>
+              <div class="price-badge">KSh <?php echo number_format((float)$price, 2) ?></div>
+            <?php endif; ?>
+          </div>
+          <div class="body">
+            <h3 class="title"><?php echo htmlspecialchars($svc['name']) ?></h3>
+            <p class="desc"><?php echo htmlspecialchars($svc['description']) ?></p>
+            <div class="meta">
+              <?php if(!empty($svc['duration'])): ?>
+                <span class="pill">⏱ <?php echo htmlspecialchars($svc['duration']) ?></span>
+              <?php endif; ?>
+              <?php foreach(explode(',', $tags) as $tg): $tg=trim($tg); if(!$tg) continue; ?>
+                <span class="pill">🐾 <?php echo htmlspecialchars(ucfirst($tg)) ?></span>
+              <?php endforeach; ?>
             </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <img src="<?= base_url ?>uploads/assets/services_hero.webp" alt="Our Services" class="img-fluid rounded-4 shadow-lg" 
-                     onerror="this.src='<?= base_url ?>uploads/<?= $_settings->info('cover') ?>'">
+            <div class="actions">
+              <!-- Use your existing details page name here (fixed to view_details) -->
+              <a class="link" href="<?php echo $base_url ?>?page=view_details&id=<?php echo urlencode($svc['id']) ?>">Details</a>
+              <a class="cta"  href="<?php echo $base_url ?>?page=home#appointment">Book Now</a>
             </div>
-        </div>
+          </div>
+        </article>
+        <?php endforeach; ?>
+      </div>
+      <div id="emptyState" class="empty" style="display:none;">No services match your search.</div>
     </div>
-</section>
-
-<!-- Search & Filter Section -->
-<section class="py-4 bg-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <!-- Search Bar -->
-                <div class="search-bar-container mb-4" data-aos="fade-up">
-                    <div class="input-group">
-                        <span class="input-group-text bg-transparent border-0">
-                            <i class="fas fa-search text-muted"></i>
-                        </span>
-                        <input type="text" id="serviceSearch" class="form-control border-0 shadow-none" 
-                               placeholder="Search services (e.g., vaccination, grooming, dental)...">
-                        <button class="btn btn-primary rounded-pill px-4" type="button">
-                            <i class="fas fa-search me-2"></i> Search
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Filter Chips -->
-                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                    <div class="filter-chip active" data-filter="all">
-                        <i class="fas fa-th"></i> All Services
-                    </div>
-                    <?php 
-                    $categories = $conn->query("SELECT * FROM `category_list` WHERE `delete_flag` = 0 ORDER BY `name` ASC");
-                    $cat_icons = ['dog' => 'fa-dog', 'cat' => 'fa-cat', 'bird' => 'fa-dove', 'rabbit' => 'fa-paw', 'hamster' => 'fa-paw'];
-                    if($categories):
-                        while($cat = $categories->fetch_assoc()):
-                        $icon = 'fa-paw';
-                        foreach($cat_icons as $key => $val) {
-                            if(stripos($cat['name'], $key) !== false) {
-                                $icon = $val;
-                                break;
-                            }
-                        }
-                    ?>
-                    <div class="filter-chip" data-filter="<?= strtolower($cat['name']) ?>">
-                        <i class="fas <?= $icon ?>"></i> <?= $cat['name'] ?>
-                    </div>
-                    <?php 
-                        endwhile;
-                    endif; 
-                    ?>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Services Grid Section -->
-<section class="py-5">
-    <div class="container">
-        <div class="row" id="servicesGrid">
-            <?php
-            // Get all services
-            $services_qry = $conn->query("SELECT * FROM `service_list` WHERE `delete_flag` = 0 ORDER BY `name` ASC");
-            
-            // Build category lookup array
-            $categories_qry = $conn->query("SELECT * FROM `category_list` WHERE `delete_flag` = 0");
-            $cat_arr = [];
-            if($categories_qry) {
-                while($cat_row = $categories_qry->fetch_assoc()) {
-                    $cat_arr[$cat_row['id']] = $cat_row['name'];
-                }
-            }
-            
-            // Define colors
-            $colors = ['primary', 'success', 'info', 'warning', 'danger', 'purple', 'teal', 'indigo'];
-            
-            // Display services
-            if($services_qry):
-                while($service = $services_qry->fetch_assoc()):
-                // Get first category for this service
-                $category_ids = explode(',', $service['category_ids']);
-                $first_cat_id = isset($category_ids[0]) ? trim($category_ids[0]) : 1;
-                $category_name = isset($cat_arr[$first_cat_id]) ? $cat_arr[$first_cat_id] : 'General';
-                
-                // Build category names for data attribute
-                $category_names = [];
-                foreach($category_ids as $cat_id) {
-                    $cat_id = trim($cat_id);
-                    if(isset($cat_arr[$cat_id])) {
-                        $category_names[] = strtolower($cat_arr[$cat_id]);
-                    }
-                }
-                $categories_str = implode(' ', $category_names);
-                
-                // Determine color
-                $colorIndex = $first_cat_id % count($colors);
-                $color = $colors[$colorIndex];
-                
-                // Strip HTML tags from description for preview
-                $description = strip_tags($service['description']);
-            ?>
-            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-category="<?= $categories_str ?>" data-service-id="<?= $service['id'] ?>">
-                <div class="service-card card shadow-sm">
-                    <!-- Service Image -->
-                    <div class="service-card-image">
-                        <img src="<?= base_url ?>uploads/services/<?= $service['id'] ?>.jpg" 
-                             alt="<?= $service['name'] ?>"
-                             onerror="this.src='<?= base_url ?>uploads/assets/service_placeholder.jpg'">
-                        
-                        <!-- Price Badge -->
-                        <div class="service-card-badge">
-                            <span class="text-<?= $color ?>">₱<?= number_format($service['fee'], 2) ?></span>
-                        </div>
-                        
-                        <!-- Icon Badge -->
-                        <div class="service-icon-badge bg-<?= $color ?> bg-gradient">
-                            <i class="fas fa-stethoscope fa-lg text-white"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Service Content -->
-                    <div class="service-card-body">
-                        <h5 class="fw-bold mb-2"><?= $service['name'] ?></h5>
-                        <p class="text-muted small mb-3">
-                            <?= strlen($description) > 100 ? substr($description, 0, 100) . '...' : $description ?>
-                        </p>
-                        
-                        <!-- Category Tag -->
-                        <div class="pet-type-tags">
-                            <span class="pet-tag">
-                                <i class="fas fa-folder"></i> <?= $category_name ?>
-                            </span>
-                            <span class="pet-tag">
-                                <i class="fas fa-clock"></i> 30-60 min
-                            </span>
-                        </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="d-flex gap-2 mt-3">
-                            <button class="btn btn-outline-<?= $color ?> btn-sm rounded-pill flex-grow-1" 
-                                    onclick="openServiceModal(<?= $service['id'] ?>, '<?= addslashes($service['name']) ?>', '<?= addslashes($description) ?>', <?= $service['fee'] ?>, '<?= addslashes($category_name) ?>', <?= $first_cat_id ?>)">
-                                <i class="fas fa-info-circle me-1"></i> Details
-                            </button>
-                            <button class="btn btn-<?= $color ?> btn-sm rounded-pill flex-grow-1" 
-                                    onclick="openAppointmentModal(<?= $service['id'] ?>, '<?= addslashes($service['name']) ?>', <?= $first_cat_id ?>)">
-                                <i class="fas fa-calendar-plus me-1"></i> Book Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php 
-                endwhile;
-            else:
-            ?>
-            <div class="col-12">
-                <div class="alert alert-info text-center">
-                    <i class="fas fa-info-circle me-2"></i>
-                    No services available at the moment. Please check back later.
-                </div>
-            </div>
-            <?php 
-            endif;
-            ?>
-        </div>
-        
-        <!-- No Results Message -->
-        <div id="noResults" class="text-center py-5 d-none" data-aos="fade-up">
-            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-            <h4 class="text-muted">No services found</h4>
-            <p class="text-muted">Try adjusting your search or filter</p>
-        </div>
-    </div>
-</section>
-
-<!-- Service Detail Modal -->
-<div class="modal fade service-modal" id="serviceModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div>
-                    <h3 class="modal-title fw-bold mb-2" id="serviceModalTitle"></h3>
-                    <div class="d-flex gap-3">
-                        <span class="badge bg-white bg-opacity-25" id="serviceCategory"></span>
-                    </div>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Service Image -->
-                <div class="mb-4">
-                    <img id="serviceModalImage" src="" alt="" class="img-fluid rounded-3 w-100" style="max-height: 300px; object-fit: cover;">
-                </div>
-                
-                <!-- Price -->
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="price-tag">
-                        ₱<span id="servicePrice">0.00</span>
-                        <small>/ session</small>
-                    </div>
-                    <button class="btn btn-primary rounded-pill px-4" onclick="quickBookFromModal()">
-                        <i class="fas fa-calendar-check me-2"></i> Book This Service
-                    </button>
-                </div>
-                
-                <!-- Description -->
-                <div class="mb-4">
-                    <h5 class="fw-bold mb-3">Description</h5>
-                    <p class="text-muted" id="serviceDescription"></p>
-                </div>
-                
-                <!-- What's Included -->
-                <div class="mb-4">
-                    <h5 class="fw-bold mb-3">What's Included</h5>
-                    <ul class="feature-list">
-                        <li><i class="fas fa-check-circle"></i> Professional consultation</li>
-                        <li><i class="fas fa-check-circle"></i> Complete examination</li>
-                        <li><i class="fas fa-check-circle"></i> Health report</li>
-                        <li><i class="fas fa-check-circle"></i> Follow-up support</li>
-                    </ul>
-                </div>
-                
-                <!-- Quick Appointment Form -->
-                <div class="appointment-quick-form" id="quickAppointmentSection" style="display: none;">
-                    <h5 class="fw-bold mb-3">
-                        <i class="fas fa-calendar-alt me-2 text-primary"></i> Book Appointment
-                    </h5>
-                    <form id="quickAppointmentForm">
-                        <input type="hidden" id="modal_service_id" name="service_id">
-                        <input type="hidden" id="modal_category_id" name="category_id">
-                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] = bin2hex(random_bytes(32)) ?>">
-                        
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Your Name *</label>
-                                <input type="text" name="owner_name" class="form-control" value="<?= $_settings->userdata('firstname') ? $_settings->userdata('firstname') . ' ' . $_settings->userdata('lastname') : '' ?>" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Contact Number *</label>
-                                <input type="tel" name="contact" class="form-control" value="<?= $_settings->userdata('contact') ?>" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Email *</label>
-                                <input type="email" name="email" class="form-control" value="<?= $_settings->userdata('email') ?>" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Pet Name *</label>
-                                <input type="text" name="pet_name" class="form-control" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Preferred Date *</label>
-                                <input type="date" name="schedule" class="form-control" min="<?= date('Y-m-d') ?>" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Pet Type</label>
-                                <select name="pet_type" class="form-select">
-                                    <option value="">Select...</option>
-                                    <option value="Dog">Dog</option>
-                                    <option value="Cat">Cat</option>
-                                    <option value="Bird">Bird</option>
-                                    <option value="Rabbit">Rabbit</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Additional Notes</label>
-                                <textarea name="remarks" class="form-control" rows="2"></textarea>
-                            </div>
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">
-                                    <i class="fas fa-check-circle me-2"></i> Confirm Appointment
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Appointment Modal (Standalone) -->
-<div class="modal fade" id="appointmentModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content rounded-4">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold">
-                    <i class="fas fa-calendar-plus me-2"></i> Book Appointment
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="alert alert-info d-flex align-items-center">
-                    <i class="fas fa-info-circle me-2"></i>
-                    <div>
-                        <strong>Service:</strong> <span id="appointmentServiceName"></span>
-                    </div>
-                </div>
-                
-                <form id="standaloneAppointmentForm" class="needs-validation" novalidate>
-                    <input type="hidden" id="standalone_service_id" name="service_id">
-                    <input type="hidden" id="standalone_category_id" name="category_id">
-                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                    <input type="text" name="website" style="display:none" tabindex="-1">
-                    
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Full Name *</label>
-                            <input type="text" name="owner_name" class="form-control form-control-lg" value="<?= $_settings->userdata('firstname') ? $_settings->userdata('firstname') . ' ' . $_settings->userdata('lastname') : '' ?>" required>
-                            <div class="invalid-feedback">Please enter your name</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Contact Number *</label>
-                            <input type="tel" name="contact" class="form-control form-control-lg" value="<?= $_settings->userdata('contact') ?>" required>
-                            <div class="invalid-feedback">Please enter contact number</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Email Address *</label>
-                            <input type="email" name="email" class="form-control form-control-lg" value="<?= $_settings->userdata('email') ?>" required>
-                            <div class="invalid-feedback">Please enter valid email</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Address</label>
-                            <input type="text" name="address" class="form-control form-control-lg" value="<?= $_settings->userdata('address') ?>">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pet Name *</label>
-                            <input type="text" name="pet_name" class="form-control form-control-lg" required>
-                            <div class="invalid-feedback">Please enter pet's name</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Pet Type</label>
-                            <select name="pet_type" class="form-select form-select-lg">
-                                <option value="">Choose...</option>
-                                <option value="Dog">Dog</option>
-                                <option value="Cat">Cat</option>
-                                <option value="Bird">Bird</option>
-                                <option value="Rabbit">Rabbit</option>
-                                <option value="Hamster">Hamster</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Breed</label>
-                            <input type="text" name="breed" class="form-control form-control-lg">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Age</label>
-                            <input type="text" name="age" class="form-control form-control-lg" placeholder="e.g., 2 years">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Preferred Date *</label>
-                            <input type="date" name="schedule" class="form-control form-control-lg" min="<?= date('Y-m-d') ?>" required>
-                            <div class="invalid-feedback">Please select a date</div>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label fw-semibold">Additional Notes</label>
-                            <textarea name="remarks" class="form-control" rows="3" placeholder="Any special concerns or requests..."></textarea>
-                        </div>
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3">
-                                <span class="submit-text">
-                                    <i class="fas fa-calendar-check me-2"></i> Book Appointment
-                                </span>
-                                <span class="spinner-border spinner-border-sm me-2 d-none"></span>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Toast Notifications -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-check-circle me-2"></i> <span id="successMessage"></span>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
-    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-exclamation-circle me-2"></i> <span id="errorMessage"></span>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
+  </section>
 </div>
 
 <script>
-// Services Page JavaScript
-document.addEventListener('DOMContentLoaded', function() {
-    // Search functionality
-    const searchInput = document.getElementById('serviceSearch');
-    const serviceCards = document.querySelectorAll('[data-category]');
-    const noResults = document.getElementById('noResults');
-    
-    searchInput?.addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        let visibleCount = 0;
-        
-        serviceCards.forEach(card => {
-            const title = card.querySelector('h5').textContent.toLowerCase();
-            const description = card.querySelector('.text-muted').textContent.toLowerCase();
-            
-            if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                card.style.display = '';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        noResults.classList.toggle('d-none', visibleCount > 0);
+/* Reveal */
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(ent=>{ if(ent.isIntersecting){ ent.target.classList.add('show'); io.unobserve(ent.target); } });
+  }, {threshold:.14});
+  els.forEach(el=>io.observe(el));
+})();
+
+/* Search + Filter chips (clickable) */
+(function(){
+  const input = document.getElementById('searchInput');
+  const btn   = document.getElementById('btnSearch');
+  const chips = Array.from(document.querySelectorAll('[data-chip]'));
+  const cards = Array.from(document.querySelectorAll('#cardsGrid .card'));
+  const empty = document.getElementById('emptyState');
+
+  function apply(){
+    const q = (input.value || '').trim().toLowerCase();
+    const activeChip = document.querySelector('.btn-chip.active')?.getAttribute('data-chip') || 'all';
+    let shown = 0;
+    cards.forEach(card=>{
+      const title = card.getAttribute('data-title') || '';
+      const tags  = (card.getAttribute('data-tags') || '').split(',').map(s=>s.trim());
+      const matchText = q ? title.includes(q) : true;
+      const matchChip = activeChip==='all' ? true : tags.includes(activeChip);
+      const vis = matchText && matchChip;
+      card.style.display = vis ? '' : 'none';
+      if(vis) shown++;
     });
-    
-    // Filter functionality
-    const filterChips = document.querySelectorAll('.filter-chip');
-    
-    filterChips.forEach(chip => {
-        chip.addEventListener('click', function() {
-            // Remove active from all chips
-            filterChips.forEach(c => c.classList.remove('active'));
-            // Add active to clicked chip
-            this.classList.add('active');
-            
-            const filter = this.dataset.filter;
-            let visibleCount = 0;
-            
-            serviceCards.forEach(card => {
-                const category = card.dataset.category.toLowerCase();
-                
-                if (filter === 'all' || category.includes(filter)) {
-                    card.style.display = '';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            noResults.classList.toggle('d-none', visibleCount > 0);
-        });
+    empty.style.display = shown ? 'none' : '';
+  }
+
+  btn.addEventListener('click', apply);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') apply(); });
+  chips.forEach(c=>{
+    c.addEventListener('click', ()=>{
+      chips.forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      apply();
     });
-});
-
-// Open service detail modal
-function openServiceModal(serviceId, serviceName, serviceDesc, serviceFee, categoryName, categoryId) {
-    document.getElementById('serviceModalTitle').textContent = serviceName;
-    document.getElementById('serviceCategory').textContent = categoryName;
-    document.getElementById('servicePrice').textContent = parseFloat(serviceFee).toFixed(2);
-    document.getElementById('serviceDescription').textContent = serviceDesc;
-    document.getElementById('serviceModalImage').src = '<?= base_url ?>uploads/services/' + serviceId + '.jpg';
-    document.getElementById('serviceModalImage').onerror = function() {
-        this.src = '<?= base_url ?>uploads/assets/service_placeholder.jpg';
-    };
-    document.getElementById('modal_service_id').value = serviceId;
-    document.getElementById('modal_category_id').value = categoryId;
-    
-    const modal = new bootstrap.Modal(document.getElementById('serviceModal'));
-    modal.show();
-}
-
-// Open appointment modal directly
-function openAppointmentModal(serviceId, serviceName, categoryId) {
-    document.getElementById('appointmentServiceName').textContent = serviceName;
-    document.getElementById('standalone_service_id').value = serviceId;
-    document.getElementById('standalone_category_id').value = categoryId;
-    
-    const modal = new bootstrap.Modal(document.getElementById('appointmentModal'));
-    modal.show();
-}
-
-// Show quick book section in modal
-function quickBookFromModal() {
-    const quickSection = document.getElementById('quickAppointmentSection');
-    quickSection.style.display = 'block';
-    quickSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-// Handle quick appointment form submission (in modal)
-document.getElementById('quickAppointmentForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
-    
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('<?= base_url ?>submit_appointment.php', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            bootstrap.Modal.getInstance(document.getElementById('serviceModal')).hide();
-            showToast('success', result.msg || 'Appointment booked successfully!');
-            this.reset();
-            document.getElementById('quickAppointmentSection').style.display = 'none';
-        } else {
-            showToast('error', result.msg || 'Failed to book appointment');
-        }
-    } catch (error) {
-        showToast('error', 'An error occurred. Please try again.');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> Confirm Appointment';
-    }
-});
-
-// Handle standalone appointment form submission
-document.getElementById('standaloneAppointmentForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    if (!this.checkValidity()) {
-        e.stopPropagation();
-        this.classList.add('was-validated');
-        return;
-    }
-    
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const submitText = submitBtn.querySelector('.submit-text');
-    const spinner = submitBtn.querySelector('.spinner-border');
-    
-    submitBtn.disabled = true;
-    submitText.classList.add('d-none');
-    spinner.classList.remove('d-none');
-    
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('<?= base_url ?>submit_appointment.php', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            bootstrap.Modal.getInstance(document.getElementById('appointmentModal')).hide();
-            showToast('success', result.msg || 'Appointment booked successfully!');
-            this.reset();
-            this.classList.remove('was-validated');
-        } else {
-            showToast('error', result.msg || 'Failed to book appointment');
-        }
-    } catch (error) {
-        showToast('error', 'An error occurred. Please try again.');
-    } finally {
-        submitBtn.disabled = false;
-        submitText.classList.remove('d-none');
-        spinner.classList.add('d-none');
-    }
-});
-
-// Toast notification function
-function showToast(type, message) {
-    const toastEl = type === 'success' ? document.getElementById('successToast') : document.getElementById('errorToast');
-    const messageEl = type === 'success' ? document.getElementById('successMessage') : document.getElementById('errorMessage');
-    
-    if (toastEl && messageEl) {
-        messageEl.textContent = message;
-        const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
-        toast.show();
-    }
-}
+  });
+})();
 </script>
-
-<!-- Reopen container for index.php structure -->
-<div class="container d-none">

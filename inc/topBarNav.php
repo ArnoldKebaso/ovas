@@ -78,11 +78,11 @@ $hrefAdmin     = $base . 'admin';
     <!-- links -->
     <div class="collapse navbar-collapse" id="ovnavCollapse">
       <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="<?php echo $hrefHome; ?>">Home</a></li>
+        <li class="nav-item"><a href="./?page=home" class="nav-link fw-semibold" data-page="home">Home</a>
         <li class="nav-item"><a class="nav-link" href="<?php echo $hrefServices; ?>">Services</a></li>
         <li class="nav-item"><a class="nav-link" href="<?php echo $hrefBook; ?>">Book Appointment</a></li>
-        <li class="nav-item"><a class="nav-link" href="<?php echo $hrefAbout; ?>">About Us</a></li>
-        <li class="nav-item"><a class="nav-link" href="<?php echo $hrefContact; ?>">Contact</a></li>
+        <li class="nav-item"><a href="./?page=about_us" class="nav-link fw-semibold" data-page="about_us">About Us</a>
+        <li class="nav-item">   <a href="./?page=contact_us" class="nav-link fw-semibold" data-page="contact_us">Contact</a>
 
         <!-- admin + CTA -->
         <li class="nav-item ms-lg-3">

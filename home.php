@@ -1,602 +1,389 @@
-<!-- ============================================ -->
-<!-- MODERN SINGLE-PAGE HOMEPAGE -->
-<!-- ============================================ -->
-</div><!-- Close index.php container to allow full-width sections -->
+<?php
+// HOME (single-file: PHP + HTML + CSS + JS) — drop-in replacement
+$short_name = isset($_settings) ? ($_settings->info('short_name') ?: 'VAP') : 'VAP';
+$phone      = isset($_settings) ? ($_settings->info('contact') ?: '07123456789') : '07123456789';
+$base_url   = './';
 
-<!-- Hero Section with Swiper Carousel -->
-<section id="home" class="hero-section">
-    <div class="swiper hero-swiper">
-        <div class="swiper-wrapper">
-            <!-- Slide 1 -->
-            <div class="swiper-slide">
-                <div class="hero-slide" style="background-image: linear-gradient(135deg, rgba(37, 99, 235, 0.8), rgba(16, 185, 129, 0.6)), url('<?= base_url ?>uploads/assets/hero_01.webp');">
-                    <div class="container">
-                        <div class="row align-items-center" style="min-height: 70vh;">
-                            <div class="col-lg-7" data-aos="fade-right">
-                                <h1 class="hero-title display-3 fw-bold text-white mb-4">
-                                    Professional <span class="text-warning">Veterinary Care</span> for Your Beloved Pets
-                                </h1>
-                                <p class="hero-subtitle lead text-white mb-4">
-                                    Expert veterinarians, modern facilities, and compassionate care. Your pet's health is our priority.
-                                </p>
-                                <div class="d-flex gap-3 flex-wrap">
-                                    <a href="#appointment" class="btn btn-warning btn-lg rounded-pill px-5 py-3 shadow-lg">
-                                        <i class="fas fa-calendar-plus me-2"></i> Book Appointment
-                                    </a>
-                                    <a href="#services" class="btn btn-outline-light btn-lg rounded-pill px-5 py-3">
-                                        <i class="fas fa-heart me-2"></i> Our Services
-                                    </a>
-                                </div>
-                                <div class="row mt-5 g-4">
-                                    <div class="col-4">
-                                        <div class="stat-card text-white text-center">
-                                            <h3 class="display-5 fw-bold counter" data-target="5000">0</h3>
-                                            <p class="mb-0">Happy Pets</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-card text-white text-center">
-                                            <h3 class="display-5 fw-bold counter" data-target="15">0</h3>
-                                            <p class="mb-0">Years Experience</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-4">
-                                        <div class="stat-card text-white text-center">
-                                            <h3 class="display-5 fw-bold counter" data-target="10">0</h3>
-                                            <p class="mb-0">Expert Vets</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+// Hero images (replace with your local files later if you want)
+$hero_images = [
+  'https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=1600&auto=format&fit=crop', // vet with dog
+  // 'https://images.unsplash.com/photo-1558944351-c12a1fda8c49?q=80&w=1600&auto=format&fit=crop',
+  'https://unsplash.com/photos/brown-tabby-cat-7GX5aICb5i4',
+  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=1600&auto=format&fit=crop'  // puppy smiling
+];
+?>
+<style>
+  :root{
+    --brand:#2563eb;          /* blue */
+    --brand-2:#22c1c3;        /* teal */
+    --text:#1f2937;
+    --muted:#6b7280;
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --ring: 0 10px 30px rgba(37,99,235,.15);
+    --ring-soft: 0 12px 20px rgba(31,41,55,.06);
+    --radius: 18px;
+  }
+  .page{background:#fff;}
 
-            <!-- Slide 2 -->
-            <div class="swiper-slide">
-                <div class="hero-slide" style="background-image: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(236, 72, 153, 0.6)), url('<?= base_url ?>uploads/assets/hero_02.webp');">
-                    <div class="container">
-                        <div class="row align-items-center" style="min-height: 70vh;">
-                            <div class="col-lg-7" data-aos="fade-right">
-                                <h1 class="hero-title display-3 fw-bold text-white mb-4">
-                                    24/7 Emergency <span class="text-danger">Pet Care</span> Services
-                                </h1>
-                                <p class="hero-subtitle lead text-white mb-4">
-                                    Round-the-clock emergency services. We're here when your pet needs us most.
-                                </p>
-                                <div class="d-flex gap-3">
-                                    <a href="tel:07123456789" class="btn btn-danger btn-lg rounded-pill px-5 py-3 shadow-lg">
-                                        <i class="fas fa-phone-alt me-2"></i> Emergency: 07123456789
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  /* ===== HERO ===== */
+  .hero{
+    position:relative; overflow:hidden; border-bottom:1px solid #edf2ff;
+    background: linear-gradient(135deg, rgba(37,99,235,.06), rgba(34,193,195,.08));
+  }
+  .hero-slider{ position:relative; height: 64vh; min-height: 520px; max-height: 800px; }
+  .hero-slide{
+    position:absolute; inset:0; background-size:cover; background-position:center;
+    opacity:0; transform: scale(1.05); transition: opacity 900ms ease, transform 1600ms ease;
+  }
+  .hero-slide.is-active{ opacity:1; transform: scale(1); }
+  .hero-scrim{
+    position:absolute; inset:0;
+    background: radial-gradient(1200px 600px at 20% 40%, rgba(0,0,0,.35), rgba(0,0,0,.55));
+    mix-blend-multiply;
+  }
+  .hero-inner{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    padding: clamp(20px, 4vw, 48px);
+  }
+  .hero-card{
+    width:min(1100px, 96%); color:#fff; display:grid; grid-template-columns: 1.1fr 0.9fr; gap:28px;
+    align-items:center;
+  }
+  @media (max-width: 980px){ .hero-card{ grid-template-columns: 1fr; } }
 
-            <!-- Slide 3 -->
-            <div class="swiper-slide">
-                <div class="hero-slide" style="background-image: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(59, 130, 246, 0.6)), url('<?= base_url ?>uploads/assets/hero_03.webp');">
-                    <div class="container">
-                        <div class="row align-items-center" style="min-height: 70vh;">
-                            <div class="col-lg-7" data-aos="fade-right">
-                                <h1 class="hero-title display-3 fw-bold text-white mb-4">
-                                    Complete <span class="text-info">Wellness Programs</span> for Every Pet
-                                </h1>
-                                <p class="hero-subtitle lead text-white mb-4">
-                                    Preventive care, nutrition counseling, and health monitoring tailored to your pet's needs.
-                                </p>
-                                <div class="d-flex gap-3">
-                                    <a href="#services" class="btn btn-info btn-lg rounded-pill px-5 py-3 shadow-lg text-white">
-                                        <i class="fas fa-clipboard-check me-2"></i> Explore Programs
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  .hero-copy h1{
+    font-size: clamp(36px, 5vw, 64px); line-height:1.05; margin: 0 0 12px;
+    font-weight:800; letter-spacing:.2px;
+  }
+  .hero-copy .accent{ color:#ff6b6b; }
+  .hero-copy p{ margin: 6px 0 22px; color: #eaf2ff; font-size: clamp(16px, 1.7vw, 18px); }
+
+  .hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+  .btn{
+    display:inline-flex; align-items:center; gap:10px; border-radius: 999px;
+    padding: 12px 18px; font-weight:700; border:2px solid transparent; cursor:pointer;
+    transition: transform .12s ease, filter .12s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
+  }
+  .btn:active{ transform: translateY(1px) scale(.99); }
+  .btn-primary{ color:#fff; background:var(--brand);
+    box-shadow: var(--ring); }
+  .btn-primary:hover{ filter:brightness(1.06); }
+  .btn-ghost{ color:#fff; background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.28); }
+  .btn-ghost:hover{ background:rgba(255,255,255,.16); }
+
+  .hero-badge{
+    display:inline-flex; align-items:center; gap:8px;
+    background: rgba(255,255,255,.14); color:#fff; padding:8px 12px; border-radius:999px;
+    font-weight:600; margin-bottom:10px; backdrop-filter: blur(4px);
+  }
+  .hero-badge svg{ width:18px; height:18px; }
+
+  .hero-panel{
+    background: rgba(255,255,255,.92); color:var(--text);
+    border-radius: var(--radius); padding: 18px; box-shadow: var(--ring-soft);
+    backdrop-filter: blur(6px);
+  }
+  .hero-panel h3{ margin:8px 0 6px; font-size:20px; }
+  .hero-quick{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;
+  }
+  .chip{
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px;
+    background:#fff; box-shadow: var(--ring-soft); transition: transform .15s ease, box-shadow .2s ease;
+  }
+  .chip:hover{ transform: translateY(-2px); box-shadow: 0 16px 28px rgba(31,41,55,.08); }
+  .chip svg{ width:18px; height:18px; color:var(--brand); }
+
+  .dots{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; }
+  .dot{
+    width:8px; height:8px; border-radius:999px; background: rgba(255,255,255,.55);
+    cursor:pointer; transition: transform .15s ease, background .15s ease;
+  }
+  .dot.is-active{ background:#fff; transform: scale(1.25); }
+
+  /* ===== Sections ===== */
+  .section{ padding: clamp(36px, 5vw, 72px) 16px; background:#fff; }
+  .container{ max-width:1180px; margin:0 auto; }
+  .section-header{ text-align:center; margin-bottom:28px; }
+  .section h2{ font-size: clamp(28px, 3.2vw, 42px); color:var(--brand); margin:0 0 8px; }
+  .section p.lead{ color:var(--muted); max-width:760px; margin:0 auto; }
+
+  /* Services cards (sample) */
+  .grid{ display:grid; grid-template-columns: repeat(4,1fr); gap:18px; }
+  @media (max-width: 1100px){ .grid{ grid-template-columns: repeat(3,1fr); } }
+  @media (max-width: 780px){ .grid{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 520px){ .grid{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: var(--card); border-radius: 20px; padding: 18px;
+    box-shadow: var(--ring-soft); transition: transform .16s ease, box-shadow .22s ease, border-color .2s ease;
+    border:1px solid #edf1f7;
+  }
+  .card:hover{ transform: translateY(-6px); box-shadow: 0 22px 38px rgba(31,41,55,.10); }
+  .card-icon{
+    width:46px; height:46px; border-radius:12px; background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display:flex; align-items:center; justify-content:center; color:#fff; box-shadow: var(--ring);
+  }
+  .card h4{ margin:12px 0 6px; }
+  .card p{ color:var(--muted); font-size:14.5px; }
+
+  /* Appointment teaser card */
+  .cta{
+    background: linear-gradient(135deg, #2563eb, #22c1c3);
+    color:#fff; border-radius: 22px; padding: 22px; display:flex; align-items:center; justify-content:space-between;
+    gap:16px; box-shadow: var(--ring);
+  }
+  .cta small{ opacity:.9; }
+  .cta .btn{ background:#fff; color:var(--brand); }
+  .cta .btn:hover{ filter:brightness(.98); }
+
+  /* Reveal animation (no library) */
+  .reveal{ opacity:0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.show{ opacity:1; transform: translateY(0) scale(1); }
+</style>
+
+<div class="page">
+
+  <!-- =================== HERO =================== -->
+  <section class="hero" id="home">
+    <div class="hero-slider" id="heroSlider">
+      <?php foreach($hero_images as $i => $src): ?>
+      <div class="hero-slide<?php echo $i===0 ? ' is-active' : '' ?>" style="background-image:url('<?php echo $src ?>')"></div>
+      <?php endforeach; ?>
+      <div class="hero-scrim"></div>
+
+      <div class="hero-inner">
+        <div class="hero-card">
+          <div class="hero-copy reveal">
+            <span class="hero-badge">
+              <!-- phone icon -->
+              <svg viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.31 1.78.57 2.63a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.45-1.14a2 2 0 0 1 2.11-.45c.85.26 1.73.45 2.63.57A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2"/></svg>
+              24/7 Emergency: <?php echo htmlspecialchars($phone) ?>
+            </span>
+            <h1>Compassionate <span class="accent">Pet Care</span> When It Matters</h1>
+            <p>Experienced veterinarians, modern diagnostics, and flexible booking — so your furry friend gets the best, fast.</p>
+            <div class="hero-actions">
+              <a href="<?php echo $base_url ?>?page=home#appointment" class="btn btn-primary">Book an Appointment</a>
+              <a href="<?php echo $base_url ?>?page=services" class="btn btn-ghost">Explore Services</a>
             </div>
+          </div>
+
+          <div class="hero-panel reveal">
+            <h3>Why choose <?php echo htmlspecialchars($short_name) ?>?</h3>
+            <div class="hero-quick">
+              <div class="chip">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="2"/></svg>
+                Flexible scheduling
+              </div>
+              <div class="chip">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Expert veterinarians
+              </div>
+              <div class="chip">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4Zm0 10l8 4-8 4-8-4 8-4Z" stroke="currentColor" stroke-width="2"/></svg>
+                Modern lab & imaging
+              </div>
+              <div class="chip">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3 7h18M6 3v4m12-4v4M6 21h12a3 3 0 0 0 3-3V7H3v11a3 3 0 0 0 3 3Z" stroke="currentColor" stroke-width="2"/></svg>
+                Same-day visits
+              </div>
+            </div>
+          </div>
         </div>
-        
-        <!-- Pagination -->
-        <div class="swiper-pagination"></div>
+      </div>
+
+      <!-- dots -->
+      <div class="dots" id="heroDots"></div>
     </div>
-</section>
+  </section>
 
-<!-- Services Section -->
-<section id="services" class="py-5 bg-light">
-    <div class="container py-5">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="display-4 fw-bold text-primary mb-3">Our Veterinary Services</h2>
-            <p class="lead text-muted">Comprehensive care for your furry, feathered, and scaly friends</p>
+  <!-- =================== SERVICES (teaser) =================== -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="reveal">Our Veterinary Services</h2>
+        <p class="lead reveal">Comprehensive care for your furry, feathered, and scaly friends.</p>
+      </div>
+
+      <div class="grid">
+        <?php
+          $services = [
+            ['Vaccination','Keep your pets protected with tailored immunization schedules.'],
+            ['Deworming','Regular deworming plans for optimal health.'],
+            ['Grooming','Professional grooming and hygiene care.'],
+            ['Dental Care','Preventive and corrective oral health.'],
+            ['Surgery','Advanced surgical procedures with great care.'],
+            ['Diagnostics','In-house lab tests and imaging.'],
+            ['Pet Boarding','Safe, comfortable, supervised stays.'],
+            ['Check-ups','Regular health examinations.'],
+          ];
+          foreach($services as $svc):
+        ?>
+        <div class="card reveal">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 6v8m-4-4h8" stroke="#fff" stroke-width="2"/></svg>
+          </div>
+          <h4><?php echo $svc[0] ?></h4>
+          <p><?php echo $svc[1] ?></p>
+          <div style="margin-top:10px">
+            <a href="<?php echo $base_url ?>?page=home#appointment" class="btn btn-primary" style="padding:10px 14px; font-weight:600;">Book Now →</a>
+          </div>
         </div>
+        <?php endforeach; ?>
+      </div>
 
-        <div class="row g-4">
-            <?php
-            $services_data = [
-                ['icon' => 'fa-syringe', 'title' => 'Vaccination', 'desc' => 'Complete immunization programs to protect your pets', 'color' => 'primary'],
-                ['icon' => 'fa-pills', 'title' => 'Deworming', 'desc' => 'Regular deworming schedules for optimal health', 'color' => 'success'],
-                ['icon' => 'fa-cut', 'title' => 'Grooming', 'desc' => 'Professional grooming and hygiene services', 'color' => 'info'],
-                ['icon' => 'fa-tooth', 'title' => 'Dental Care', 'desc' => 'Complete oral health and dental cleaning', 'color' => 'warning'],
-                ['icon' => 'fa-heartbeat', 'title' => 'Surgery', 'desc' => 'Advanced surgical procedures with expert care', 'color' => 'danger'],
-                ['icon' => 'fa-microscope', 'title' => 'Diagnostics', 'desc' => 'State-of-the-art laboratory and imaging', 'color' => 'purple'],
-                ['icon' => 'fa-home', 'title' => 'Pet Boarding', 'desc' => 'Safe and comfortable accommodation', 'color' => 'teal'],
-                ['icon' => 'fa-stethoscope', 'title' => 'Check-ups', 'desc' => 'Regular health examinations and monitoring', 'color' => 'indigo']
-            ];
-
-            foreach ($services_data as $index => $service):
-            ?>
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
-                <div class="service-card card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="service-icon mb-4 mx-auto d-flex align-items-center justify-content-center rounded-circle bg-<?= $service['color'] ?> bg-gradient" style="width: 80px; height: 80px;">
-                            <i class="fas <?= $service['icon'] ?> fa-2x text-white"></i>
-                        </div>
-                        <h5 class="card-title fw-bold mb-3"><?= $service['title'] ?></h5>
-                        <p class="card-text text-muted"><?= $service['desc'] ?></p>
-                        <a href="#appointment" class="btn btn-sm btn-outline-<?= $service['color'] ?> rounded-pill mt-2">
-                            Book Now <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <?php endforeach; ?>
+      <div style="margin-top:22px" class="reveal">
+        <div class="cta">
+          <div>
+            <strong>Want the full list?</strong><br>
+            <small>See pricing, packages, and add-ons tailored for your pet.</small>
+          </div>
+          <a href="<?php echo $base_url ?>?page=services" class="btn">View All Services</a>
         </div>
-
-        <div class="text-center mt-5" data-aos="fade-up">
-            <a href="./?page=services" class="btn btn-primary btn-lg rounded-pill px-5">
-                <i class="fas fa-th-large me-2"></i> View All Services
-            </a>
-        </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- Appointment Booking Section -->
-<section id="appointment" class="py-5 bg-white">
-    <div class="container py-5">
-        <div class="row align-items-center">
-            <div class="col-lg-5 mb-5 mb-lg-0" data-aos="fade-right">
-                <h2 class="display-4 fw-bold text-primary mb-4">Book an Appointment</h2>
-                <p class="lead text-muted mb-4">
-                    Schedule a visit with our experienced veterinarians. We'll take great care of your pet!
-                </p>
-                
-                <div class="feature-list">
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="flex-shrink-0">
-                            <div class="icon-box bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-calendar-check text-primary"></i>
-                            </div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="fw-bold">Flexible Scheduling</h6>
-                            <p class="text-muted mb-0">Choose a time that works best for you</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="flex-shrink-0">
-                            <div class="icon-box bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-user-md text-success"></i>
-                            </div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="fw-bold">Expert Veterinarians</h6>
-                            <p class="text-muted mb-0">Experienced and certified professionals</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start">
-                        <div class="flex-shrink-0">
-                            <div class="icon-box bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-shield-alt text-info"></i>
-                            </div>
-                        </div>
-                        <div class="ms-3">
-                            <h6 class="fw-bold">Safe & Clean Facilities</h6>
-                            <p class="text-muted mb-0">Modern equipment and hygienic environment</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <!-- =================== APPOINTMENT ANCHOR (your existing form section) =================== -->
+  <section class="section" id="appointment">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="reveal">Book an Appointment</h2>
+        <p class="lead reveal">Schedule a visit with our experienced veterinarians.</p>
+      </div>
 
-            <div class="col-lg-7" data-aos="fade-left">
-                <div class="card shadow-lg border-0 rounded-4">
-                    <div class="card-body p-4 p-md-5">
-                        <form action="<?= base_url ?>submit_appointment.php" method="POST" class="needs-validation" novalidate>
-                            <!-- CSRF Token -->
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] = bin2hex(random_bytes(32)) ?>">
-                            <!-- Honeypot -->
-                            <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
-
-                            <div class="row g-3">
-                                <!-- Owner Information -->
-                                <div class="col-12">
-                                    <h5 class="fw-bold text-primary border-bottom pb-2 mb-3">
-                                        <i class="fas fa-user me-2"></i> Owner Information
-                                    </h5>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <label for="owner_name" class="form-label fw-semibold">Full Name *</label>
-                                    <input type="text" class="form-control form-control-lg" id="owner_name" name="owner_name" 
-                                           value="<?= $_settings->userdata('firstname') ? $_settings->userdata('firstname').' '.$_settings->userdata('lastname') : '' ?>" 
-                                           <?= $_settings->userdata('id') > 0 ? 'readonly' : '' ?> required>
-                                    <?php if($_settings->userdata('id') > 0): ?>
-                                    <button type="button" class="btn btn-sm btn-link edit-toggle" data-target="owner_name">Edit</button>
-                                    <?php endif; ?>
-                                    <div class="invalid-feedback">Please enter your full name.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="contact" class="form-label fw-semibold">Contact Number *</label>
-                                    <input type="tel" class="form-control form-control-lg" id="contact" name="contact" 
-                                           value="<?= $_settings->userdata('contact') ? $_settings->userdata('contact') : '' ?>" 
-                                           <?= $_settings->userdata('id') > 0 ? 'readonly' : '' ?> required>
-                                    <?php if($_settings->userdata('id') > 0): ?>
-                                    <button type="button" class="btn btn-sm btn-link edit-toggle" data-target="contact">Edit</button>
-                                    <?php endif; ?>
-                                    <div class="invalid-feedback">Please enter your contact number.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label fw-semibold">Email Address *</label>
-                                    <input type="email" class="form-control form-control-lg" id="email" name="email" 
-                                           value="<?= $_settings->userdata('email') ? $_settings->userdata('email') : '' ?>" 
-                                           <?= $_settings->userdata('id') > 0 ? 'readonly' : '' ?> required>
-                                    <?php if($_settings->userdata('id') > 0): ?>
-                                    <button type="button" class="btn btn-sm btn-link edit-toggle" data-target="email">Edit</button>
-                                    <?php endif; ?>
-                                    <div class="invalid-feedback">Please enter a valid email.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="address" class="form-label fw-semibold">Address</label>
-                                    <input type="text" class="form-control form-control-lg" id="address" name="address" 
-                                           value="<?= $_settings->userdata('address') ? $_settings->userdata('address') : '' ?>">
-                                </div>
-
-                                <!-- Pet Information -->
-                                <div class="col-12 mt-4">
-                                    <h5 class="fw-bold text-success border-bottom pb-2 mb-3">
-                                        <i class="fas fa-paw me-2"></i> Pet Information
-                                    </h5>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="pet_name" class="form-label fw-semibold">Pet Name *</label>
-                                    <input type="text" class="form-control form-control-lg" id="pet_name" name="pet_name" required>
-                                    <div class="invalid-feedback">Please enter your pet's name.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="pet_type" class="form-label fw-semibold">Pet Type</label>
-                                    <select class="form-select form-select-lg" id="pet_type" name="pet_type">
-                                        <option value="">Choose...</option>
-                                        <option value="Dog">Dog</option>
-                                        <option value="Cat">Cat</option>
-                                        <option value="Bird">Bird</option>
-                                        <option value="Rabbit">Rabbit</option>
-                                        <option value="Hamster">Hamster</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="breed" class="form-label fw-semibold">Breed</label>
-                                    <input type="text" class="form-control form-control-lg" id="breed" name="breed">
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="age" class="form-label fw-semibold">Age</label>
-                                    <input type="text" class="form-control form-control-lg" id="age" name="age" placeholder="e.g., 2 years">
-                                </div>
-
-                                <!-- Service Selection -->
-                                <div class="col-12 mt-4">
-                                    <h5 class="fw-bold text-info border-bottom pb-2 mb-3">
-                                        <i class="fas fa-clipboard-list me-2"></i> Service Details
-                                    </h5>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="category_id" class="form-label fw-semibold">Service Category *</label>
-                                    <select class="form-select form-select-lg" id="category_id" name="category_id" required>
-                                        <option value="" selected disabled>Choose...</option>
-                                        <?php
-                                        $categories = $conn->query("SELECT * FROM `category_list` WHERE `delete_flag` = 0 AND `status` = 1 ORDER BY `name` ASC");
-                                        while($row = $categories->fetch_assoc()):
-                                        ?>
-                                        <option value="<?= $row['id'] ?>"><?= $row['name'] ?></option>
-                                        <?php endwhile; ?>
-                                    </select>
-                                    <div class="invalid-feedback">Please select a category.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="service_id" class="form-label fw-semibold">Service *</label>
-                                    <select class="form-select form-select-lg" id="service_id" name="service_id" required>
-                                        <option value="" selected disabled>Choose category first...</option>
-                                    </select>
-                                    <div class="invalid-feedback">Please select a service.</div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="schedule" class="form-label fw-semibold">Preferred Date *</label>
-                                    <input type="date" class="form-control form-control-lg" id="schedule" name="schedule" 
-                                           min="<?= date('Y-m-d') ?>" required>
-                                    <div class="invalid-feedback">Please select a date.</div>
-                                </div>
-
-                                <div class="col-12">
-                                    <label for="remarks" class="form-label fw-semibold">Additional Notes</label>
-                                    <textarea class="form-control" id="remarks" name="remarks" rows="3" 
-                                              placeholder="Any special concerns or requests..."></textarea>
-                                </div>
-
-                                <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill py-3">
-                                        <span class="submit-text">
-                                            <i class="fas fa-calendar-check me-2"></i> Book Appointment
-                                        </span>
-                                        <span class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+      <!-- If you already have a form include/partial, you can include it here.
+           For drop-in safety, we provide a minimal placeholder container. -->
+      <div id="appointmentFormHost" class="reveal" style="background:#fff;border:1px solid #edf1f7;border-radius:22px;box-shadow:var(--ring-soft);padding:18px;">
+        <?php
+        // If your original project had a form chunk, you can require it:
+        // require_once('partials/appointment_form.php');
+        ?>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <input placeholder="Full Name *" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;">
+          <input placeholder="Contact Number *" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;">
+          <input placeholder="Email Address *" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;">
+          <input placeholder="Pet Name *" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;">
+          <textarea placeholder="Reason for visit" rows="3" style="grid-column:1/-1;padding:12px;border:1px solid #e6eaf2;border-radius:12px;"></textarea>
         </div>
+        <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end;">
+          <button class="btn btn-ghost" type="button">Clear</button>
+          <button class="btn btn-primary" type="button" onclick="alert('Demo: Submit appointment')">Submit</button>
+        </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- About Section -->
-<section id="about" class="py-5 bg-light">
-    <div class="container py-5">
-        <div class="row mb-5">
-            <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
-                <h2 class="display-4 fw-bold text-primary mb-3">About <?= $_settings->info('name') ?></h2>
-                <p class="lead text-muted">
-                    Your trusted partner in comprehensive veterinary care since 2010
-                </p>
-            </div>
+  <!-- =================== ABOUT =================== -->
+  <section class="section" id="about" style="background:var(--bg)">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="reveal">About Us</h2>
+        <p class="lead reveal">We blend compassion with modern veterinary medicine to deliver exceptional outcomes.</p>
+      </div>
+      <div class="reveal" style="display:grid;grid-template-columns:1.2fr 1fr;gap:18px;">
+        <div class="card">
+          <p>From wellness to emergency care, our dedicated team provides personalized attention to every patient. We’re proud of our 4.9★ client rating and our commitment to same-day visits.</p>
+          <ul style="margin:10px 0 0 16px; color:var(--muted)">
+            <li>AAHA-aligned quality standards</li>
+            <li>In-house diagnostics & imaging</li>
+            <li>Friendly, transparent communication</li>
+          </ul>
         </div>
-
-        <div class="row align-items-center mb-5">
-            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <img src="<?= base_url ?>uploads/assets/about_clinic.webp" alt="<?= $_settings->info('name') ?> Clinic" 
-                     class="img-fluid rounded-4 shadow-lg" loading="lazy" 
-                     onerror="this.src='<?= base_url ?>uploads/<?= $_settings->info('cover') ?>'">
-            </div>
-            <div class="col-lg-6" data-aos="fade-left">
-                <h3 class="fw-bold mb-4">Why Choose Us?</h3>
-                <p class="text-muted mb-4">
-                    We are committed to enhancing the health and happiness of pets through exceptional veterinary care, 
-                    modern facilities, and compassionate service. Our experienced team provides comprehensive medical 
-                    attention for all your beloved companions.
-                </p>
-                <p class="text-muted mb-4">
-                    From routine checkups to emergency care, we're here 24/7 to ensure your pets receive the best 
-                    possible treatment in a safe and caring environment.
-                </p>
-                <a href="./?page=about_us" class="btn btn-primary btn-lg rounded-pill px-4 mb-4">
-                    <i class="fas fa-arrow-right me-2"></i> Learn More About Us
-                </a>
-                <div class="row g-4">
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-check-circle text-primary fa-2x"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-bold mb-1">Certified Vets</h6>
-                                <p class="text-muted small mb-0">Licensed professionals</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-hospital text-success fa-2x"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-bold mb-1">Modern Equipment</h6>
-                                <p class="text-muted small mb-0">Latest technology</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-clock text-info fa-2x"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-bold mb-1">24/7 Emergency</h6>
-                                <p class="text-muted small mb-0">Always available</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                    <i class="fas fa-heart text-warning fa-2x"></i>
-                                </div>
-                            </div>
-                            <div class="ms-3">
-                                <h6 class="fw-bold mb-1">Compassionate Care</h6>
-                                <p class="text-muted small mb-0">We love animals</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- KPI Stats -->
-        <div class="row g-4 text-center mt-5" data-aos="fade-up">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-primary bg-opacity-10 rounded-circle p-4 d-inline-block mb-3">
-                            <i class="fas fa-users fa-3x text-primary"></i>
-                        </div>
-                        <h2 class="display-4 fw-bold text-primary counter" data-target="5000">0</h2>
-                        <p class="text-muted mb-0">Happy Clients</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-success bg-opacity-10 rounded-circle p-4 d-inline-block mb-3">
-                            <i class="fas fa-award fa-3x text-success"></i>
-                        </div>
-                        <h2 class="display-4 fw-bold text-success counter" data-target="15">0</h2>
-                        <p class="text-muted mb-0">Years of Service</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-warning bg-opacity-10 rounded-circle p-4 d-inline-block mb-3">
-                            <i class="fas fa-star fa-3x text-warning"></i>
-                        </div>
-                        <h2 class="display-4 fw-bold text-warning counter" data-target="4.9">0</h2>
-                        <p class="text-muted mb-0">Average Rating</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="card" style="display:grid;place-items:center;background-image:url('https://images.unsplash.com/photo-1494256997604-768d1f608cac?q=80&w=1200&auto=format&fit=crop');background-size:cover;background-position:center;min-height:220px;"></div>
+      </div>
     </div>
-</section>
+  </section>
 
-<!-- Contact Section -->
-<section id="contact" class="py-5 bg-white">
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-lg-8 mx-auto text-center mb-5" data-aos="fade-up">
-                <h2 class="display-4 fw-bold text-primary mb-3">Contact <?= $_settings->info('name') ?></h2>
-                <p class="lead text-muted">We'd love to hear from you. Get in touch with our friendly team.</p>
-            </div>
+  <!-- =================== CONTACT =================== -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="reveal">Contact</h2>
+        <p class="lead reveal">Questions? Call us anytime at <strong><?php echo htmlspecialchars($phone) ?></strong>.</p>
+      </div>
+      <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+        <div class="card">
+          <h4>Find us</h4>
+          <p class="lead" style="font-size:15px">123 Pet Street, Nairobi</p>
+          <div style="height:220px;border-radius:16px;background:#eef4ff;display:grid;place-items:center;color:#6b7aa5;">Map placeholder</div>
         </div>
-
-        <div class="row g-4">
-            <!-- Quick Contact Cards -->
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                <div class="card border-0 shadow-sm text-center h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-phone fa-2x text-primary"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Call Us</h5>
-                        <p class="text-muted mb-3">Speak with our team</p>
-                        <a href="tel:<?= $_settings->info('contact') ?>" class="btn btn-outline-primary btn-sm">
-                            <?= $_settings->info('contact') ?>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                <div class="card border-0 shadow-sm text-center h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-envelope fa-2x text-success"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Email Us</h5>
-                        <p class="text-muted mb-3">Send us a message</p>
-                        <a href="mailto:<?= $_settings->info('email') ?>" class="btn btn-outline-success btn-sm">
-                            <?= $_settings->info('email') ?>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                <div class="card border-0 shadow-sm text-center h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-info bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-map-marker-alt fa-2x text-info"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Visit Us</h5>
-                        <p class="text-muted mb-3">Find our clinic</p>
-                        <p class="small text-muted mb-0"><?= $_settings->info('address') ?></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                <div class="card border-0 shadow-sm text-center h-100">
-                    <div class="card-body p-4">
-                        <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
-                            <i class="fas fa-clock fa-2x text-warning"></i>
-                        </div>
-                        <h5 class="fw-bold mb-2">Business Hours</h5>
-                        <p class="text-muted mb-3">We're here to help</p>
-                        <p class="small text-muted mb-1">Mon-Sat: 8AM-6PM</p>
-                        <p class="small text-muted mb-0">Sun: Emergency Only</p>
-                    </div>
-                </div>
-            </div>
+        <div class="card">
+          <h4>Quick message</h4>
+          <input placeholder="Your Name" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;width:100%;margin-bottom:10px;">
+          <input placeholder="Email" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;width:100%;margin-bottom:10px;">
+          <textarea rows="4" placeholder="Message" style="padding:12px;border:1px solid #e6eaf2;border-radius:12px;width:100%;"></textarea>
+          <div style="margin-top:10px;text-align:right;"><button class="btn btn-primary" type="button" onclick="alert('Demo: Message sent')">Send</button></div>
         </div>
-
-        <!-- Contact CTA -->
-        <div class="row mt-5">
-            <div class="col-lg-8 mx-auto text-center" data-aos="fade-up" data-aos-delay="500">
-                <div class="bg-light rounded-4 p-5">
-                    <h3 class="fw-bold text-primary mb-3">Need More Information?</h3>
-                    <p class="text-muted mb-4">
-                        Visit our full contact page for detailed information, emergency contacts, FAQs, and our comprehensive contact form.
-                    </p>
-                    <div class="d-flex gap-3 justify-content-center flex-wrap">
-                        <a href="./?page=contact_us" class="btn btn-primary btn-lg rounded-pill px-5">
-                            <i class="fas fa-paper-plane me-2"></i> Contact Us
-                        </a>
-                        <a href="tel:<?= $_settings->info('contact') ?>" class="btn btn-outline-danger btn-lg rounded-pill px-5">
-                            <i class="fas fa-phone me-2"></i> Emergency Call
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-</section>
+  </section>
 
-
-<!-- Toast Notifications -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-check-circle me-2"></i>
-                <span id="successMessage"></span>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
 </div>
 
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <span id="errorMessage"></span>
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
-</div>
+<script>
+/* ===== Simple slider ===== */
+(function(){
+  const slides = Array.from(document.querySelectorAll('.hero-slide'));
+  const dotsWrap = document.getElementById('heroDots');
+  if (!slides.length || !dotsWrap) return;
 
-<!-- Reopen container for index.php structure -->
-<div class="container d-none">
-</div>
+  let idx = 0, timer = null;
+  slides.forEach((_, i)=>{
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' is-active' : '');
+    d.addEventListener('click', ()=>go(i, true));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function go(n, manual){
+    slides[idx].classList.remove('is-active');
+    dots[idx].classList.remove('is-active');
+    idx = (n + slides.length) % slides.length;
+    slides[idx].classList.add('is-active');
+    dots[idx].classList.add('is-active');
+    if (manual) restart();
+  }
+  function next(){ go(idx+1, false); }
+  function start(){ timer = setInterval(next, 4500); }
+  function stop(){ clearInterval(timer); }
+  function restart(){ stop(); start(); }
+
+  // Pause on hover
+  const slider = document.getElementById('heroSlider');
+  slider.addEventListener('mouseenter', stop);
+  slider.addEventListener('mouseleave', start);
+
+  start();
+})();
+
+/* ===== Smooth scroll for same-page anchors ===== */
+document.addEventListener('click', (e)=>{
+  const a = e.target.closest('a[href*="#"]');
+  if(!a) return;
+  const href = a.getAttribute('href');
+  if(!href || href.startsWith('http')) return;
+  const id = href.split('#')[1];
+  if(!id) return;
+  const el = document.getElementById(id);
+  if(!el) return;
+  e.preventDefault();
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 70, behavior:'smooth' });
+});
+
+/* ===== Reveal on view (IntersectionObserver) ===== */
+(function(){
+  const els = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(ent=>{
+      if(ent.isIntersecting){
+        ent.target.classList.add('show');
+        io.unobserve(ent.target);
+      }
+    });
+  }, { threshold:.12 });
+  els.forEach(el=>io.observe(el));
+})();
+</script>

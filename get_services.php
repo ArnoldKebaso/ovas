@@ -15,12 +15,11 @@ if (!isset($_GET['category_id']) || empty($_GET['category_id'])) {
 $category_id = intval($_GET['category_id']);
 
 try {
-    // Get services for the selected category
+    // Get services for the selected category (using FIND_IN_SET for comma-separated category_ids)
     $qry = $conn->query("SELECT id, name, fee, description 
                          FROM `service_list` 
-                         WHERE `category_id` = '{$category_id}' 
-                         AND `delete_flag` = 0 
-                         AND `status` = 1
+                         WHERE FIND_IN_SET('{$category_id}', `category_ids`) > 0
+                         AND `delete_flag` = 0
                          ORDER BY `name` ASC");
     
     $services = [];
@@ -31,7 +30,7 @@ try {
                 'id' => $row['id'],
                 'name' => $row['name'],
                 'fee' => floatval($row['fee']),
-                'description' => $row['description']
+                'description' => strip_tags($row['description'])
             ];
         }
     }

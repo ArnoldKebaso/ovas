@@ -7,6 +7,28 @@
   'use strict';
 
   // ============================================
+  // Scroll to Hash on Page Load
+  // ============================================
+  window.addEventListener('load', function() {
+    // Check if there's a hash in the URL
+    if (window.location.hash) {
+      const hash = window.location.hash;
+      const targetSection = document.querySelector(hash);
+      
+      if (targetSection) {
+        // Small delay to ensure page is fully loaded
+        setTimeout(() => {
+          const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+          window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth',
+          });
+        }, 100);
+      }
+    }
+  });
+
+  // ============================================
   // Initialize AOS (Animate On Scroll)
   // ============================================
   if (typeof AOS !== 'undefined') {
@@ -57,7 +79,7 @@
   // Navbar Scroll Effects & ScrollSpy
   // ============================================
   const navbar = document.getElementById('mainNav');
-  const navLinks = document.querySelectorAll('#mainNav .nav-link[href^="#"]');
+  const navLinks = document.querySelectorAll('#mainNav .nav-link[href^="#"], #mainNav .nav-link[href*="#"]');
   const sections = document.querySelectorAll('section[id]');
 
   // Add scrolled class to navbar
@@ -69,49 +91,93 @@
     }
   }
 
-  // IntersectionObserver for section highlighting
-  const observerOptions = {
-    root: null,
-    rootMargin: '-50% 0px -50% 0px',
-    threshold: 0,
-  };
-
-  const observerCallback = (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const sectionId = entry.target.getAttribute('id');
-        
-        // Remove active class from all links
-        navLinks.forEach((link) => link.classList.remove('active'));
-        
-        // Add active class to current section link
-        const activeLink = document.querySelector(`#mainNav .nav-link[href="#${sectionId}"]`);
-        if (activeLink) {
-          activeLink.classList.add('active');
-        }
+  // IntersectionObserver for section highlighting - Only run on homepage
+  if (sections.length > 0) {
+    // Alternative ScrollSpy using scroll position
+    function updateActiveNavLink() {
+      if (window.scrollY < 100) {
+        // At top of page
+        setActiveNavLink('home');
+        return;
       }
-    });
-  };
 
-  const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
+      let currentSection = '';
+      sections.forEach((section) => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.offsetHeight;
+        const scrollPos = window.scrollY + 100; // Account for navbar
 
-  sections.forEach((section) => {
-    sectionObserver.observe(section);
-  });
+        if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+          currentSection = section.getAttribute('id');
+        }
+      });
 
-  // Smooth scroll on nav link click
+      if (currentSection) {
+        setActiveNavLink(currentSection);
+      }
+    }
+
+    function setActiveNavLink(sectionId) {
+      // Remove active class from all links
+      navLinks.forEach((link) => link.classList.remove('active'));
+      
+      // Add active class to current section link
+      const activeLink = document.querySelector(`#mainNav .nav-link[href="#${sectionId}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+
+    // Use scroll event instead of IntersectionObserver for more precise control
+    let scrollTimer = null;
+    function handleScrollSpyUpdate() {
+      if (scrollTimer) {
+        clearTimeout(scrollTimer);
+      }
+      scrollTimer = setTimeout(updateActiveNavLink, 10);
+    }
+
+    window.addEventListener('scroll', handleScrollSpyUpdate, { passive: true });
+    updateActiveNavLink(); // Initial check
+  }
+
+  // Smooth scroll on nav link click - only for hash links
   navLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const targetId = link.getAttribute('href');
-      const targetSection = document.querySelector(targetId);
+      const href = link.getAttribute('href');
+      const dataSection = link.getAttribute('data-section');
       
-      if (targetSection) {
-        const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
-        window.scrollTo({
-          top: offsetTop,
-          behavior: 'smooth',
-        });
+      // Handle section links (hash anchors)
+      if (href && href.startsWith('#')) {
+        // Check if we're on the homepage
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page') || 'home';
+        
+        if (currentPage === 'home' || !urlParams.has('page')) {
+          // We're on homepage, smooth scroll to section
+          e.preventDefault();
+          const targetSection = document.querySelector(href);
+          
+          if (targetSection) {
+            const offsetTop = targetSection.offsetTop - 80; // Account for fixed navbar
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth',
+            });
+            
+            // Close mobile menu if open
+            const navbarCollapse = document.getElementById('navbarCollapse');
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+              const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                toggle: false
+              });
+              bsCollapse.hide();
+            }
+          }
+        } else {
+          // We're on another page, navigate to homepage with hash
+          window.location.href = `./?page=home${href}`;
+        }
       }
     });
   });
@@ -119,6 +185,39 @@
   // Handle scroll events
   window.addEventListener('scroll', handleNavbarScroll, { passive: true });
   handleNavbarScroll(); // Initial check
+
+  // ============================================
+  // Footer Section Links
+  // ============================================
+  const footerSectionLinks = document.querySelectorAll('.footer-section-link');
+  
+  footerSectionLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href');
+      
+      if (href && href.startsWith('#')) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPage = urlParams.get('page') || 'home';
+        
+        if (currentPage === 'home' || !urlParams.has('page')) {
+          // We're on homepage, smooth scroll to section
+          e.preventDefault();
+          const targetSection = document.querySelector(href);
+          
+          if (targetSection) {
+            const offsetTop = targetSection.offsetTop - 80;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth',
+            });
+          }
+        } else {
+          // We're on another page, navigate to homepage with hash
+          window.location.href = `./?page=home${href}`;
+        }
+      }
+    });
+  });
 
   // ============================================
   // Counter Animation (KPIs)

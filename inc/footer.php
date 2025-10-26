@@ -1,271 +1,258 @@
-<script>
-  $(document).ready(function(){
-    $('.list-group').each(function(){
-      if(String($(this).text()).trim() == ""){
-        $(this).html("")
-      }
-    })
-    
-     window.viewer_modal = function($src = ''){
-      start_loader()
-      var t = $src.split('.')
-      t = t[1]
-      if(t =='mp4'){
-        var view = $("<video src='"+$src+"' controls autoplay></video>")
-      }else{
-        var view = $("<img src='"+$src+"' />")
-      }
-      $('#viewer_modal .modal-content video,#viewer_modal .modal-content img').remove()
-      $('#viewer_modal .modal-content').append(view)
-      $('#viewer_modal').modal({
-              show:true,
-              backdrop:'static',
-              keyboard:false,
-              focus:true
-            })
-            end_loader()  
+<?php
+// Safe fallbacks from System Settings
+$short_name = $_settings->info('short_name') ?? 'VAP';
+$sys_name   = $_settings->info('name') ?? 'Veterinary Appointment System';
+$address    = $_settings->info('address') ?? 'Nairobi';
+$email      = $_settings->info('email') ?? 'pet@gmail.com';
+$phone      = $_settings->info('contact') ?? '07123456789';
+$year       = date('Y');
 
-  }
-    window.uni_modal = function($title = '' , $url='',$size=""){
-        start_loader()
-        $.ajax({
-            url:$url,
-            error:err=>{
-                console.log()
-                alert("An error occured")
-            },
-            success:function(resp){
-                if(resp){
-                    $('#uni_modal .modal-title').html($title)
-                    $('#uni_modal .modal-body').html(resp)
-                    if($size != ''){
-                        $('#uni_modal .modal-dialog').addClass($size+'  modal-dialog-centered')
-                    }else{
-                        $('#uni_modal .modal-dialog').removeAttr("class").addClass("modal-dialog modal-md modal-dialog-centered")
-                    }
-                    $('#uni_modal').modal({
-                      show:true,
-                      backdrop:'static',
-                      keyboard:false,
-                      focus:true
-                    })
-                    end_loader()
-                }
-            }
-        })
-    }
-    window._conf = function($msg='',$func='',$params = []){
-       $('#confirm_modal #confirm').attr('onclick',$func+"("+$params.join(',')+")")
-       $('#confirm_modal .modal-body').html($msg)
-       $('#confirm_modal').modal('show')
-    }
-  })
-</script>
-<footer class="main-footer text-sm">
-  <div class="container">
-        <strong>Copyright © <?php echo date('Y') ?>. 
-        <!-- <a href=""></a> -->
-        </strong>
-        All rights reserved.
-        <div class="float-right d-none d-sm-inline-block">
-         
+// Optional logo path from settings (fallback to uploads)
+$logo = $_settings->info('logo') ?? 'uploads/logo-1641262650.png';
+?>
+
+<footer class="ovas-footer text-light mt-auto">
+  <div class="ovas-footer__top">
+    <div class="container">
+      <div class="row g-4 justify-content-between">
+        <!-- Brand / About -->
+        <div class="col-12 col-lg-4">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="<?php echo base_url.$logo; ?>" alt="<?php echo htmlspecialchars($short_name); ?> logo" class="ovas-footer__logo">
+            <h5 class="mb-0"><?php echo htmlspecialchars($short_name); ?></h5>
+          </div>
+          <p class="text-opacity-75 mb-4">
+            Professional veterinary care for your beloved pets.
+            We provide comprehensive health services with compassion and expertise.
+          </p>
+
+          <div class="d-flex gap-2">
+            <!-- Social buttons (free, CDN SVGs from SimpleIcons) -->
+            <a class="ovas-social" href="#" aria-label="Facebook">
+              <img src="https://cdn.simpleicons.org/facebook/ffffff" alt="Facebook" width="18" height="18">
+            </a>
+            <a class="ovas-social" href="#" aria-label="Instagram">
+              <img src="https://cdn.simpleicons.org/instagram/ffffff" alt="Instagram" width="18" height="18">
+            </a>
+            <a class="ovas-social" href="#" aria-label="X">
+              <img src="https://cdn.simpleicons.org/x/ffffff" alt="X (Twitter)" width="18" height="18">
+            </a>
+            <a class="ovas-social" href="#" aria-label="WhatsApp">
+              <img src="https://cdn.simpleicons.org/whatsapp/ffffff" alt="WhatsApp" width="18" height="18">
+            </a>
+          </div>
         </div>
-      </div>
-      </footer>
-    </div>
-    <!-- ./wrapper -->
-<div id="libraries">
-    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-    <script>
-      $.widget.bridge('uibutton', $.ui.button)
-    </script>
-    <!-- Bootstrap 4 -->
-    <script src="<?php echo base_url ?>plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <!-- ChartJS -->
-    <script src="<?php echo base_url ?>plugins/chart.js/Chart.min.js"></script>
-    <!-- Sparkline -->
-    <script src="<?php echo base_url ?>plugins/sparklines/sparkline.js"></script>
-    <!-- Select2 -->
-    <script src="<?php echo base_url ?>plugins/select2/js/select2.full.min.js"></script>
-    <!-- JQVMap -->
-    <script src="<?php echo base_url ?>plugins/jqvmap/jquery.vmap.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
-    <!-- jQuery Knob Chart -->
-    <script src="<?php echo base_url ?>plugins/jquery-knob/jquery.knob.min.js"></script>
-    <!-- daterangepicker -->
-    <script src="<?php echo base_url ?>plugins/moment/moment.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/daterangepicker/daterangepicker.js"></script>
-    <!-- Tempusdominus Bootstrap 4 -->
-    <script src="<?php echo base_url ?>plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <!-- Summernote -->
-    <script src="<?php echo base_url ?>plugins/summernote/summernote-bs4.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/datatables/jquery.dataTables.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/moment/moment.min.js"></script>
-    <script src="<?php echo base_url ?>plugins/fullcalendar/main.js"></script>
-    <!-- overlayScrollbars -->
-    <!-- <script src="<?php echo base_url ?>plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script> -->
-    <!-- AdminLTE App -->
-    <script src="<?php echo base_url ?>dist/js/adminlte.js"></script>
-  </div>   
-    <div class="daterangepicker ltr show-ranges opensright">
-      <div class="ranges">
-        <ul>
-          <li data-range-key="Today">Today</li>
-          <li data-range-key="Yesterday">Yesterday</li>
-          <li data-range-key="Last 7 Days">Last 7 Days</li>
-          <li data-range-key="Last 30 Days">Last 30 Days</li>
-          <li data-range-key="This Month">This Month</li>
-          <li data-range-key="Last Month">Last Month</li>
-          <li data-range-key="Custom Range">Custom Range</li>
-        </ul>
-      </div>
-      <div class="drp-calendar left">
-        <div class="calendar-table"></div>
-        <div class="calendar-time" style="display: none;"></div>
-      </div>
-      <div class="drp-calendar right">
-        <div class="calendar-table"></div>
-        <div class="calendar-time" style="display: none;"></div>
-      </div>
-      <div class="drp-buttons"><span class="drp-selected"></span><button class="cancelBtn btn btn-sm btn-default" type="button">Cancel</button><button class="applyBtn btn btn-sm btn-primary" disabled="disabled" type="button">Apply</button> </div>
-    </div>
-    <div class="jqvmap-label" style="display: none; left: 1093.83px; top: 394.361px;"></div>
 
-<!-- Modern Footer -->
-<footer class="modern-footer bg-dark text-white py-5 mt-5">
-  <div class="container">
-    <div class="row g-4">
-      <!-- About Column -->
-      <div class="col-lg-4 col-md-6">
-        <div class="d-flex align-items-center mb-3">
-          <img src="<?= validate_image($_settings->info('logo')) ?>" alt="Logo" class="rounded-circle me-3" style="height: 50px; width: 50px; object-fit: cover;">
-          <h5 class="mb-0 fw-bold"><?= $_settings->info('short_name') ?></h5>
+        <!-- Quick Links -->
+        <div class="col-6 col-lg-2">
+          <h6 class="ovas-footer__title">Quick Links</h6>
+          <ul class="ovas-links">
+            <li><a href="<?php echo base_url ?>?page=home">Home</a></li>
+            <li><a href="<?php echo base_url ?>?page=services">Services</a></li>
+            <li><a href="<?php echo base_url ?>?page=appointment">Book Appointment</a></li>
+            <li><a href="<?php echo base_url ?>?page=about">About Us</a></li>
+            <li><a href="<?php echo base_url ?>?page=contact_us">Contact</a></li>
+          </ul>
         </div>
-        <p class="text-white-50 mb-3">
-          Professional veterinary care for your beloved pets. We provide comprehensive health services with compassion and expertise.
-        </p>
-        <div class="d-flex gap-2">
-          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
-            <i class="fab fa-twitter"></i>
-          </a>
-          <a href="#" class="btn btn-outline-light btn-sm rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
-            <i class="fab fa-whatsapp"></i>
-          </a>
+
+        <!-- Our Services -->
+        <div class="col-6 col-lg-3">
+          <h6 class="ovas-footer__title">Our Services</h6>
+          <ul class="ovas-links ovas-links--two">
+            <li><a href="<?php echo base_url ?>?page=services#vaccination">Vaccination</a></li>
+            <li><a href="<?php echo base_url ?>?page=services#deworming">Deworming</a></li>
+            <li><a href="<?php echo base_url ?>?page=services#grooming">Grooming</a></li>
+            <li><a href="<?php echo base_url ?>?page=services#dental">Dental Care</a></li>
+            <li><a href="<?php echo base_url ?>?page=services#surgery">Surgery</a></li>
+          </ul>
         </div>
-      </div>
 
-      <!-- Quick Links Column -->
-      <div class="col-lg-2 col-md-6">
-        <h6 class="fw-bold mb-3">Quick Links</h6>
-        <ul class="list-unstyled">
-          <li class="mb-2"><a href="#home" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Home</a></li>
-          <li class="mb-2"><a href="#services" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Services</a></li>
-          <li class="mb-2"><a href="#appointment" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Book Appointment</a></li>
-          <li class="mb-2"><a href="#about" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>About Us</a></li>
-          <li class="mb-2"><a href="#contact" class="text-white-50 text-decoration-none hover-primary"><i class="fas fa-chevron-right me-2 small"></i>Contact</a></li>
-        </ul>
-      </div>
-
-      <!-- Services Column -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="fw-bold mb-3">Our Services</h6>
-        <ul class="list-unstyled">
-          <li class="mb-2"><span class="text-white-50"><i class="fas fa-syringe me-2 text-primary"></i>Vaccination</span></li>
-          <li class="mb-2"><span class="text-white-50"><i class="fas fa-pills me-2 text-success"></i>Deworming</span></li>
-          <li class="mb-2"><span class="text-white-50"><i class="fas fa-cut me-2 text-info"></i>Grooming</span></li>
-          <li class="mb-2"><span class="text-white-50"><i class="fas fa-tooth me-2 text-warning"></i>Dental Care</span></li>
-          <li class="mb-2"><span class="text-white-50"><i class="fas fa-heartbeat me-2 text-danger"></i>Surgery</span></li>
-        </ul>
-      </div>
-
-      <!-- Contact Column -->
-      <div class="col-lg-3 col-md-6">
-        <h6 class="fw-bold mb-3">Contact Info</h6>
-        <ul class="list-unstyled">
-          <li class="mb-3 d-flex align-items-start">
-            <i class="fas fa-map-marker-alt me-3 mt-1 text-primary"></i>
-            <span class="text-white-50 small"><?= $_settings->info('address') ?></span>
-          </li>
-          <li class="mb-3 d-flex align-items-center">
-            <i class="fas fa-phone me-3 text-success"></i>
-            <a href="tel:<?= $_settings->info('contact') ?>" class="text-white-50 text-decoration-none hover-primary small"><?= $_settings->info('contact') ?></a>
-          </li>
-          <li class="mb-3 d-flex align-items-center">
-            <i class="fas fa-envelope me-3 text-info"></i>
-            <a href="mailto:<?= $_settings->info('email') ?>" class="text-white-50 text-decoration-none hover-primary small"><?= $_settings->info('email') ?></a>
-          </li>
-          <li class="mb-3 d-flex align-items-start">
-            <i class="fas fa-clock me-3 mt-1 text-warning"></i>
-            <span class="text-white-50 small">Mon - Sat: 8AM - 6PM<br>Sunday: Emergency Only</span>
-          </li>
-        </ul>
-      </div>
+        <!-- Contact Info -->
+        <div class="col-12 col-lg-3">
+          <h6 class="ovas-footer__title">Contact Info</h6>
+          <ul class="ovas-contact list-unstyled">
+            <li>
+              <span class="ovas-contact__label">Address</span>
+              <span class="ovas-contact__value"><?php echo htmlspecialchars($address); ?></span>
+            </li>
+            <li>
+              <span class="ovas-contact__label">Phone</span>
+              <a class="ovas-contact__value" href="tel:<?php echo preg_replace('/\\D+/', '', $phone); ?>">
+                <?php echo htmlspecialchars($phone); ?>
+              </a>
+            </li>
+            <li>
+              <span class="ovas-contact__label">Email</span>
+              <a class="ovas-contact__value" href="mailto:<?php echo htmlspecialchars($email); ?>">
+                <?php echo htmlspecialchars($email); ?>
+              </a>
+            </li>
+            <li class="mt-2">
+              <span class="ovas-contact__label">Hours</span>
+              <span class="ovas-contact__value">Mon – Sat: 8:00 AM – 6:00 PM<br>Sunday: Emergency Only</span>
+            </li>
+          </ul>
+        </div>
+      </div> <!-- /row -->
     </div>
+  </div>
 
-    <!-- Bottom Bar -->
-    <hr class="border-secondary my-4">
-    <div class="row align-items-center">
-      <div class="col-md-6 text-center text-md-start">
-        <p class="mb-0 text-white-50 small">
-          &copy; <?= date('Y') ?> <?= $_settings->info('name') ?>. All rights reserved.
-        </p>
+  <div class="ovas-footer__bottom">
+    <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
+      <div class="small text-opacity-75">
+        © <?php echo $year; ?> <?php echo htmlspecialchars(trim($sys_name)); ?>. All rights reserved.
       </div>
-      <div class="col-md-6 text-center text-md-end">
-        <p class="mb-0 text-white-50 small">
-          <a href="#" class="text-white-50 text-decoration-none hover-primary me-3">Privacy Policy</a>
-          <a href="#" class="text-white-50 text-decoration-none hover-primary me-3">Terms of Service</a>
-          <a href="./admin" class="text-white-50 text-decoration-none hover-primary">Admin</a>
-        </p>
+      <div class="d-flex align-items-center gap-3 small">
+        <a class="ovas-policy" href="#">Privacy Policy</a>
+        <span class="text-opacity-50">•</span>
+        <a class="ovas-policy" href="#">Terms of Service</a>
+        <span class="text-opacity-50">•</span>
+        <a class="ovas-policy" href="<?php echo base_url ?>admin" target="_blank" rel="noopener">Admin</a>
       </div>
     </div>
   </div>
 </footer>
-
 <style>
-.modern-footer {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-}
+ /* ===== OVAS Footer ===== */
+.ovas-footer{
+  --footer-bg: #0f172a;      /* slate-900 */
+  --footer-bg-grad: radial-gradient(1200px 600px at 20% -10%, rgba(37,99,235,.15), transparent),
+                     radial-gradient(900px 500px at 80% 10%, rgba(16,185,129,.12), transparent);
+  --footer-text: #e5e7eb;    /* gray-200 */
+  --footer-muted: #94a3b8;   /* slate-400 */
+  --footer-border: rgba(148,163,184,.15);
 
-.modern-footer .hover-primary:hover {
-  color: #2563eb !important;
-  transform: translateX(4px);
-  transition: all 0.3s ease;
-}
-
-.modern-footer .btn-outline-light:hover {
-  background: #2563eb;
-  border-color: #2563eb;
-  transform: translateY(-2px);
-  transition: all 0.3s ease;
-}
-
-.modern-footer h6 {
+  color: var(--footer-text);
+  background: var(--footer-bg);
   position: relative;
-  padding-bottom: 0.5rem;
 }
 
-.modern-footer h6::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, #2563eb, #10b981);
+.ovas-footer__top{
+  padding: 56px 0 28px;
+  background-image: var(--footer-bg-grad);
+  border-top: 1px solid var(--footer-border);
 }
-</style>
 
-<script>
-  $(function(){
-    $('.wrapper>.content-wrapper').css("min-height",$(window).height() - $('#mainNav').height() - $("footer.modern-footer").height())
-  })
-</script>
+.ovas-footer__bottom{
+  padding: 16px 0 20px;
+  border-top: 1px solid var(--footer-border);
+  background: rgba(2,6,23,.35);
+  backdrop-filter: saturate(120%) blur(6px);
+}
+
+/* Brand */
+.ovas-footer__logo{
+  width: 44px; height: 44px;
+  object-fit: contain;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  padding: 6px;
+}
+
+/* Column headings */
+.ovas-footer__title{
+  font-weight: 600;
+  letter-spacing: .2px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.ovas-footer__title::after{
+  content:"";
+  display:block;
+  width:36px; height:3px;
+  border-radius: 6px;
+  margin-top: 8px;
+  background: linear-gradient(90deg,#22d3ee,#22c55e);
+}
+
+/* Link lists */
+.ovas-links{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Perfect vertical rhythm */
+  display: grid;
+  gap: 10px;
+}
+.ovas-links--two{
+  grid-template-columns: 1fr;
+}
+@media (min-width: 992px){
+  .ovas-links--two{
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    column-gap: 16px;
+  }
+}
+
+.ovas-links a{
+  color: var(--footer-text);
+  text-decoration: none;
+  opacity: .8;
+  transition: color .2s ease, opacity .2s ease, transform .2s ease;
+}
+.ovas-links a:hover{
+  color: #93c5fd; /* light blue */
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+/* Contact info */
+.ovas-contact li{
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--footer-border);
+}
+.ovas-contact li:last-child{ border-bottom: 0; }
+.ovas-contact__label{
+  display:block;
+  font-size: .8rem;
+  color: var(--footer-muted);
+}
+.ovas-contact__value{
+  color: var(--footer-text);
+  text-decoration: none;
+  word-break: break-word;
+}
+.ovas-contact a.ovas-contact__value:hover{ color:#93c5fd; }
+
+/* Social buttons */
+.ovas-social{
+  --size: 40px;
+  width: var(--size);
+  height: var(--size);
+  display: inline-flex;
+  align-items: center;
+  padding: 8px;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--footer-border);
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.ovas-social img{ display:block; }
+.ovas-social:hover{
+  transform: translateY(-2px) scale(1.03);
+  background: linear-gradient(135deg, rgba(59,130,246,.25), rgba(16,185,129,.25));
+  box-shadow: 0 10px 18px rgba(2,6,23,.35);
+}
+
+/* Policy links */
+.ovas-policy{
+  color: var(--footer-text);
+  opacity: .8;
+  text-decoration: none;
+  transition: opacity .2s ease, color .2s ease;
+}
+.ovas-policy:hover{
+  opacity: 1;
+  color: #93c5fd;
+}
+
+/* Spacing helpers (footer context) */
+.ovas-footer p{ margin-bottom: 0; }
+.ovas-footer .text-opacity-75{ color: rgba(229,231,235,.75) !important; }
+.ovas-footer .text-opacity-50{ color: rgba(229,231,235,.5) !important; }
+
+/* Tighter on phones */
+@media (max-width: 575.98px){
+  .ovas-footer__top{ padding: 40px 0 20px; }
+}

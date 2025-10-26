@@ -1,53 +1,34 @@
 <?php
-// SERVICES PAGE — Clean Drop-in (mock data, clickable filters, fixed hero spacing)
-// Uses $_settings if present, safe fallbacks otherwise.
+// SERVICES PAGE — Clean Drop-in with Dynamic Database Data
+require_once 'initialize.php';
+require_once 'classes/ServicesModel.php';
 
 $short_name = isset($_settings) ? ($_settings->info('short_name') ?: 'VAP') : 'VAP';
 $phone      = isset($_settings) ? ($_settings->info('contact')     ?: '07123456789') : '07123456789';
 $base_url   = './';
 
-/* ---------- Mock Data (swap to DB later) ---------- */
-$services = [
-  [
-    'id'=>101,
-    'name'=>'Vaccination',
-    'description'=>'Tailored immunization schedules for puppies, kittens, and adult pets.',
-    'price'=>500.00,
-    'duration'=>'30–60 min',
-    'tags'=>'dogs,cats',
-    'image'=>'https://images.unsplash.com/photo-1600959907703-125ba1374a12?q=80&w=1600&auto=format&fit=crop'
-  ],
-  [
-    'id'=>102,
-    'name'=>'Deworming',
-    'description'=>'Routine internal parasite control plans to keep your pet healthy.',
-    'price'=>250.00,
-    'duration'=>'15–30 min',
-    'tags'=>'dogs,cats,rabbits',
-    'image'=>'https://images.unsplash.com/photo-1518378188025-22bd89516ee2?q=80&w=1600&auto=format&fit=crop'
-  ],
-  [
-    'id'=>103,
-    'name'=>'Dental Care',
-    'description'=>'Complete oral health and dental cleaning with gentle anesthesia.',
-    'price'=>1700.00,
-    'duration'=>'60–90 min',
-    'tags'=>'cats,dogs',
-    'image'=>'https://images.unsplash.com/photo-1601758064134-0c3ce3a356b5?q=80&w=1600&auto=format&fit=crop'
-  ],
-  [
-    'id'=>104,
-    'name'=>'Grooming',
-    'description'=>'Professional grooming, bathing, nail trimming, and fur styling.',
-    'price'=>1500.00,
-    'duration'=>'60–90 min',
-    'tags'=>'dogs',
-    'image'=>'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop'
-  ],
-  [
-    'id'=>105,
-    'name'=>'Diagnostics',
-    'description'=>'In-house lab tests and imaging for fast, accurate results.',
+/* ---------- Get Services from Database ---------- */
+$servicesModel = new ServicesModel();
+$services = $servicesModel->active();
+
+// Get categories for filtering
+$categories = $servicesModel->getCategories();
+
+// Format services for frontend (ensure consistent structure)
+$formattedServices = [];
+foreach ($services as $service) {
+    $formattedServices[] = [
+        'id' => $service['id'],
+        'name' => $service['name'],
+        'description' => $service['description'],
+        'price' => (float)$service['fee'],
+        'duration' => $service['duration'] . ' min',
+        'tags' => strtolower($service['category']),
+        'category' => $service['category'],
+        'image' => $service['image_path'] ?: 'https://images.unsplash.com/photo-1600959907703-125ba1374a12?q=80&w=1600&auto=format&fit=crop'
+    ];
+}
+$services = $formattedServices;
     'price'=>1000.00,
     'duration'=>'—',
     'tags'=>'birds,cats,dogs',
@@ -225,7 +206,7 @@ $IMG_FALLBACK = 'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=
             <div class="actions">
               <!-- Use your existing details page name here (fixed to view_details) -->
               <a class="link" href="<?php echo $base_url ?>?page=view_details&id=<?php echo urlencode($svc['id']) ?>">Details</a>
-              <a class="cta"  href="<?php echo $base_url ?>?page=home#appointment">Book Now</a>
+              <a class="cta"  href="<?php echo $base_url ?>appointment.php?service_id=<?php echo urlencode($svc['id']) ?>">Book Now</a>
             </div>
           </div>
         </article>

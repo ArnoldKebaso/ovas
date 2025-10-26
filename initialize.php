@@ -8,6 +8,9 @@ if (!function_exists('config')) {
     require_once __DIR__ . '/config.php';
 }
 
+// Initialize error logging as early as possible
+require_once __DIR__ . '/classes/ErrorLogger.php';
+
 $dev_data = array('id'=>'-1','firstname'=>'Developer','lastname'=>'','username'=>'dev_oretnom','password'=>'5da283a2d990e8d8512cf967df5bc0d0','last_login'=>'','date_updated'=>'','date_added'=>'');
 
 // Legacy constants for backward compatibility
@@ -43,7 +46,7 @@ function db() {
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
         } catch (PDOException $e) {
-            error_log("Database connection failed: " . $e->getMessage());
+            handleError('critical', "Database connection failed: " . $e->getMessage(), __FILE__, __LINE__);
             if (config('APP_ENV') !== 'production') {
                 throw $e;
             }

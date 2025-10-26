@@ -1,55 +1,103 @@
 <?php
-require_once('initialize.php');
+/**
+ * Get Service Details API
+ * Returns service information including fee and duration
+ */
 
+require_once 'initialize.php';
+require_once 'inc/sess_auth.php';
+require_once 'classes/ServicesModel.php';
+
+// Set JSON response header
 header('Content-Type: application/json');
 
-// Check if service ID is provided
-if (!isset($_GET['id']) || empty($_GET['id'])) {
+// Only allow GET requests
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    exit;
+}
+
+// Validate required parameters - support both 'id' and 'service_id' for compatibility
+$serviceId = null;
+if (!empty($_GET['service_id'])) {
+    $serviceId = (int)$_GET['service_id'];
+} elseif (!empty($_GET['id'])) {
+    $serviceId = (int)$_GET['id'];
+} else {
+    http_response_code(400);
     echo json_encode([
-        'status' => 'error',
-        'msg' => 'Service ID is required'
+        'success' => false, 
+        'message' => 'Service ID is required'
     ]);
     exit;
 }
 
-$service_id = intval($_GET['id']);
-
-// Fetch service details
-$qry = $conn->query("
-    SELECT * FROM `service_list` 
-    WHERE id = '{$service_id}' 
-    AND delete_flag = 0
-");
-
-if ($qry && $qry->num_rows > 0) {
-    $service = $qry->fetch_assoc();
+try {
+    $servicesModel = new ServicesModel();
+    $service = $servicesModel->find($serviceId);
     
-    // Get category names
-    $category_ids = explode(',', $service['category_ids']);
-    $first_cat_id = isset($category_ids[0]) ? trim($category_ids[0]) : 1;
-    
-    $cat_qry = $conn->query("SELECT name FROM `category_list` WHERE id = '{$first_cat_id}'");
-    $category_name = 'General';
-    if($cat_qry && $cat_qry->num_rows > 0) {
-        $cat_row = $cat_qry->fetch_assoc();
-        $category_name = $cat_row['name'];
+    if (!$service) {
+        http_response_code(404);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Service not found'
+        ]);
+        exit;
     }
     
+    // Format the service data for booking wizard
+    $serviceData = [
+        'id' => (int)$service['id'],
+        'name' => $service['service'],
+        'description' => strip_tags($service['description']),
+        'fee' => (float)$service['price'],
+        'fee_formatted' => 'KSh ' . number_format((float)$service['price'], 2),
+        'duration_minutes' => 30, // Default duration - could be added to database
+        'duration_formatted' => '30 minutes',
+        'category' => $service['category'] ?? 'General',
+        'status' => (int)$service['status'] === 1 ? 'active' : 'inactive',
+        'image_path' => !empty($service['image_path']) ? $service['image_path'] : null,
+        'created_at' => $service['date_created'],
+        'updated_at' => $service['date_updated']
+    ];
+    
+    // Add booking requirements
+    $serviceData['booking_requirements'] = [
+        'requires_login' => true,
+        'advance_booking_hours' => 2, // Minimum 2 hours advance booking
+        'max_advance_days' => 90,     // Maximum 90 days advance booking
+        'cancellation_hours' => 24,   // 24 hours cancellation policy
+        'deposit_required' => false   // No deposit required for now
+    ];
+    
+    // Add clinic operational info
+    $serviceData['clinic_info'] = [
+        'closed_days' => ['Sunday'],
+        'operating_hours' => '8:00 AM - 6:00 PM',
+        'timezone' => 'Africa/Nairobi'
+    ];
+    
     echo json_encode([
+        'success' => true,
+        'data' => $serviceData,
+        // Legacy format for backward compatibility
         'status' => 'success',
         'service' => [
             'id' => $service['id'],
-            'name' => $service['name'],
+            'name' => $service['service'],
             'description' => strip_tags($service['description']),
-            'fee' => $service['fee'],
-            'category_id' => $first_cat_id,
-            'category_name' => $category_name
+            'fee' => $service['price'],
+            'category_name' => $service['category'] ?? 'General'
         ]
     ]);
-} else {
+    
+} catch (Exception $e) {
+    error_log("Get service details failed: " . $e->getMessage());
+    http_response_code(500);
     echo json_encode([
-        'status' => 'error',
-        'msg' => 'Service not found'
+        'success' => false, 
+        'message' => 'Internal server error'
     ]);
 }
 ?>

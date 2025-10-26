@@ -50,7 +50,7 @@ $logo = $_settings->info('logo') ?? 'uploads/logo-1641262650.png';
             <li><a href="<?php echo base_url ?>?page=home">Home</a></li>
             <li><a href="<?php echo base_url ?>?page=services">Services</a></li>
             <li><a href="<?php echo base_url ?>?page=appointment">Book Appointment</a></li>
-            <li><a href="<?php echo base_url ?>?page=about">About Us</a></li>
+            <li><a href="<?php echo base_url ?>?page=about_us">About Us</a></li>
             <li><a href="<?php echo base_url ?>?page=contact_us">Contact</a></li>
           </ul>
         </div>

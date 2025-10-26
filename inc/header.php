@@ -1,6 +1,20 @@
 <?php
   // require_once('sess_auth.php');
+  require_once(__DIR__ . '/../classes/SecurityUtil.php');
   
+  // Security Headers
+  header("X-Content-Type-Options: nosniff");
+  header("X-Frame-Options: DENY");
+  header("X-XSS-Protection: 1; mode=block");
+  header("Referrer-Policy: strict-origin-when-cross-origin");
+  header("Content-Security-Policy: default-src 'self' data: https:; img-src 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://fonts.googleapis.com https://ajax.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com");
+  
+  // Force HTTPS in production
+  if (!isset($_SERVER['HTTPS']) && $_SERVER['SERVER_NAME'] !== 'localhost' && !str_contains($_SERVER['HTTP_HOST'], '127.0.0.1')) {
+      $redirectURL = 'https://' . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"];
+      header("Location: $redirectURL", true, 301);
+      exit();
+  }
 ?>
 <head>
   <style>
@@ -10,20 +24,24 @@
   </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="<?php echo $_settings->info('name') ?> - Professional veterinary care and pet wellness services">
+    <meta name="csrf-token" content="<?php echo htmlspecialchars(SecurityUtil::generateCSRFToken(), ENT_QUOTES, 'UTF-8'); ?>">
+    <meta name="description" content="<?php echo htmlspecialchars($_settings->info('name'), ENT_QUOTES, 'UTF-8') ?> - Professional veterinary care and pet wellness services">
     <meta name="keywords" content="veterinary, pet care, animal hospital, veterinarian, pet wellness">
-    <meta name="author" content="<?php echo $_settings->info('name') ?>">
-  	<title><?php echo $_settings->info('title') != false ? $_settings->info('title').' | ' : '' ?><?php echo $_settings->info('name') ?></title>
+    <meta name="author" content="<?php echo htmlspecialchars($_settings->info('name'), ENT_QUOTES, 'UTF-8') ?>">
+  	<title><?php echo $_settings->info('title') != false ? htmlspecialchars($_settings->info('title'), ENT_QUOTES, 'UTF-8').' | ' : '' ?><?php echo htmlspecialchars($_settings->info('name'), ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="icon" href="<?php echo validate_image($_settings->info('logo')) ?>" />
     
     <!-- Google Fonts: Inter & Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="<?php echo base_url ?>libs/css/bootstrap.min.css">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/fontawesome-free/css/all.min.css">
-    <!-- Ionicons -->
-    <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
+    
     <!-- Tempusdominus Bootstrap 4 -->
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
       <!-- DataTables -->
@@ -39,10 +57,12 @@
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/jqvmap/jqvmap.min.css">
     <!-- fullCalendar -->
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/fullcalendar/main.css">
-    <!-- Theme style -->
+    
+    <!-- AdminLTE Theme style -->
     <link rel="stylesheet" href="<?php echo base_url ?>dist/css/adminlte.css">
     <link rel="stylesheet" href="<?php echo base_url ?>dist/css/custom.css">
     <link rel="stylesheet" href="<?php echo base_url ?>assets/css/styles.css">
+    
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="<?php echo base_url ?>plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
     <!-- Daterange picker -->
@@ -67,6 +87,8 @@
 
      <!-- jQuery -->
     <script src="<?php echo base_url ?>plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery UI 1.11.4 -->
     <script src="<?php echo base_url ?>plugins/jquery-ui/jquery-ui.min.js"></script>
     <!-- SweetAlert2 -->

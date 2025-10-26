@@ -1,8 +1,18 @@
 <?php
 require_once('./initialize.php');
+require_once('./classes/SecurityUtil.php');
 
 // Set JSON header
 header('Content-Type: application/json');
+
+// Initialize secure session
+if (!SecurityUtil::initSecureSession()) {
+    echo json_encode([
+        'status' => 'error',
+        'msg' => 'Session security violation'
+    ]);
+    exit;
+}
 
 // Check if request is POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -13,8 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Rate limiting for appointment submissions
+if (!SecurityUtil::checkRateLimit('appointment_submit', 3, 300)) {
+    echo json_encode([
+        'status' => 'error',
+        'msg' => 'Too many appointment requests. Please wait 5 minutes before trying again.'
+    ]);
+    exit;
+}
+
 // Honeypot check (spam protection)
 if (!empty($_POST['website'])) {
+    SecurityUtil::logSecurityEvent('SPAM_ATTEMPT', ['endpoint' => 'submit_appointment'], 'WARNING');
     echo json_encode([
         'status' => 'error',
         'msg' => 'Spam detected'
@@ -23,8 +43,8 @@ if (!empty($_POST['website'])) {
 }
 
 // Validate CSRF token
-session_start();
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+if (!SecurityUtil::verifyCSRFToken($_POST['csrf_token'] ?? '')) {
+    SecurityUtil::logSecurityEvent('CSRF_VIOLATION', ['endpoint' => 'submit_appointment'], 'WARNING');
     echo json_encode([
         'status' => 'error',
         'msg' => 'Invalid security token. Please refresh and try again.'
@@ -121,65 +141,120 @@ try {
         exit;
     }
     
+    // Server-side capacity validation
+    if (!SecurityUtil::validateAppointmentCapacity($data['service_id'], date('Y-m-d', strtotime($data['schedule'])), $data['time_slot_id'] ?? null, $conn)) {
+        SecurityUtil::logSecurityEvent('CAPACITY_VIOLATION', [
+            'service_id' => $data['service_id'],
+            'date' => $data['schedule']
+        ], 'WARNING');
+        echo json_encode([
+            'status' => 'error',
+            'msg' => 'This time slot is no longer available. Please select a different time.'
+        ]);
+        exit;
+    }
+    
     // Get user_id if logged in
     $user_id = isset($_SESSION['userdata']['id']) ? intval($_SESSION['userdata']['id']) : null;
     
-    // Prepare SQL statement
-    $sql = "INSERT INTO `appointment_list` 
-            (`user_id`, `owner_name`, `contact`, `email`, `address`, 
-             `pet_name`, `pet_type`, `breed`, `age`, 
-             `category_id`, `service_id`, `schedule`, `remarks`, `status`) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+    // Start database transaction
+    $conn->begin_transaction();
     
-    $stmt = $conn->prepare($sql);
-    
-    if (!$stmt) {
-        throw new Exception('Failed to prepare statement: ' . $conn->error);
-    }
-    
-    $stmt->bind_param(
-        'issssssssiiis',
-        $user_id,
-        $data['owner_name'],
-        $data['contact'],
-        $data['email'],
-        $data['address'],
-        $data['pet_name'],
-        $data['pet_type'],
-        $data['breed'],
-        $data['age'],
-        $data['category_id'],
-        $data['service_id'],
-        $data['schedule'],
-        $data['remarks']
-    );
-    
-    if ($stmt->execute()) {
-        $appointment_id = $stmt->insert_id;
+    try {
+        // Prepare SQL statement
+        $sql = "INSERT INTO `appointment_list` 
+                (`user_id`, `owner_name`, `contact`, `email`, `address`, 
+                 `pet_name`, `pet_type`, `breed`, `age`, 
+                 `category_id`, `service_id`, `schedule`, `remarks`, `status`) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
         
-        // TODO: Send confirmation email
-        // require_once('./sendemail.php');
-        // sendAppointmentConfirmation($data['email'], $appointment_id);
+        $stmt = $conn->prepare($sql);
+        
+        if (!$stmt) {
+            throw new Exception('Failed to prepare statement: ' . $conn->error);
+        }
+        
+        $stmt->bind_param(
+            'issssssssiiis',
+            $user_id,
+            $data['owner_name'],
+            $data['contact'],
+            $data['email'],
+            $data['address'],
+            $data['pet_name'],
+            $data['pet_type'],
+            $data['breed'],
+            $data['age'],
+            $data['category_id'],
+            $data['service_id'],
+            $data['schedule'],
+            $data['remarks']
+        );
+        
+        if ($stmt->execute()) {
+            $appointment_id = $stmt->insert_id;
+            
+            // Double-check capacity after insertion
+            if (!SecurityUtil::validateAppointmentCapacity($data['service_id'], date('Y-m-d', strtotime($data['schedule'])), $data['time_slot_id'] ?? null, $conn)) {
+                throw new Exception('Appointment slot became unavailable during booking');
+            }
+            
+            // Commit transaction
+            $conn->commit();
+            
+            SecurityUtil::logSecurityEvent('APPOINTMENT_CREATED', [
+                'appointment_id' => $appointment_id,
+                'service_id' => $data['service_id']
+            ], 'INFO');
+            
+            // TODO: Send confirmation email
+            // require_once('./sendemail.php');
+            // sendAppointmentConfirmation($data['email'], $appointment_id);
+            
+            echo json_encode([
+                'status' => 'success',
+                'msg' => 'Appointment booked successfully! You will receive a confirmation email shortly.',
+                'appointment_id' => $appointment_id,
+                'redirect' => null // Set to profile page if logged in
+            echo json_encode([
+                'status' => 'success',
+                'msg' => 'Appointment booked successfully! You will receive a confirmation email shortly.',
+                'appointment_id' => $appointment_id,
+                'redirect' => null // Set to profile page if logged in
+            ]);
+        } else {
+            throw new Exception('Failed to execute statement: ' . $stmt->error);
+        }
+        
+        $stmt->close();
+        
+    } catch (Exception $e) {
+        // Rollback transaction on error
+        $conn->rollback();
+        
+        SecurityUtil::logSecurityEvent('APPOINTMENT_BOOKING_ERROR', [
+            'error' => $e->getMessage(),
+            'service_id' => $data['service_id'] ?? null
+        ], 'ERROR');
+        
+        error_log('Appointment booking error: ' . $e->getMessage());
         
         echo json_encode([
-            'status' => 'success',
-            'msg' => 'Appointment booked successfully! You will receive a confirmation email shortly.',
-            'appointment_id' => $appointment_id,
-            'redirect' => null // Set to profile page if logged in
+            'status' => 'error',
+            'msg' => 'Failed to book appointment. Please try again or contact us directly.'
         ]);
-    } else {
-        throw new Exception('Failed to execute statement: ' . $stmt->error);
     }
-    
-    $stmt->close();
-    
+
 } catch (Exception $e) {
-    error_log('Appointment booking error: ' . $e->getMessage());
+    SecurityUtil::logSecurityEvent('APPOINTMENT_VALIDATION_ERROR', [
+        'error' => $e->getMessage()
+    ], 'ERROR');
+    
+    error_log('Appointment validation error: ' . $e->getMessage());
     
     echo json_encode([
         'status' => 'error',
-        'msg' => 'Failed to book appointment. Please try again or contact us directly.',
-        'error' => $e->getMessage() // Remove in production
+        'msg' => 'Server error occurred. Please try again.'
     ]);
 }
 

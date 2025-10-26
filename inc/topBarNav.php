@@ -1,15 +1,24 @@
 <?php
+// Include auth functions
+require_once __DIR__ . '/sess_auth.php';
+
 // Safe settings
 $short_name = $_settings->info('short_name') ?? 'VAP';
 $logo       = $_settings->info('logo') ?? 'uploads/logo-1641262650.png';
 $base       = base_url;
 
+// Get authenticated user data
+$auth_user = auth_user();
+$is_logged_in = !empty($auth_user);
+$user_name = $is_logged_in ? ($auth_user['firstname'] . ' ' . $auth_user['lastname']) : '';
+$is_admin_user = is_admin();
+
 // === REQUIRED URLS (your original mapping)
 $hrefHome      = $base . '?page=home';
 $hrefServices  = $base . '?page=services';
 $hrefBook      = $base . '?page=home#appointment';
-$hrefAbout     = $base . '?page=home#about';
-$hrefContact   = $base . '?page=home#contact';
+$hrefAbout     = $base . '?page=about_us';
+$hrefContact   = $base . '?page=contact_us';
 $hrefAdmin     = $base . 'admin';
 ?>
 
@@ -78,20 +87,54 @@ $hrefAdmin     = $base . 'admin';
     <!-- links -->
     <div class="collapse navbar-collapse" id="ovnavCollapse">
       <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a href="./?page=home" class="nav-link fw-semibold" data-page="home">Home</a>
-        <li class="nav-item"><a class="nav-link" href="<?php echo $hrefServices; ?>">Services</a></li>
-        <li class="nav-item"><a class="nav-link" href="<?php echo $hrefBook; ?>">Book Appointment</a></li>
-        <li class="nav-item"><a href="./?page=about_us" class="nav-link fw-semibold" data-page="about_us">About Us</a>
-        <li class="nav-item">   <a href="./?page=contact_us" class="nav-link fw-semibold" data-page="contact_us">Contact</a>
+        <li class="nav-item"><a href="<?php echo $base; ?>?page=home" class="nav-link fw-semibold" data-page="home">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?php echo $base; ?>?page=services">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="<?php echo $base; ?>?page=appointment">Book Appointment</a></li>
+        <li class="nav-item"><a href="<?php echo $base; ?>?page=about_us" class="nav-link fw-semibold" data-page="about_us">About Us</a></li>
+        <li class="nav-item"><a href="<?php echo $base; ?>?page=contact_us" class="nav-link fw-semibold" data-page="contact_us">Contact</a></li>
 
-        <!-- admin + CTA -->
-        <li class="nav-item ms-lg-3">
-          <a class="btn ovbtn ovbtn--soft" href="<?php echo $hrefAdmin; ?>">
-            <span class="ovic ovic--user"></span><span>Admin</span>
-          </a>
-        </li>
+        <!-- admin + user menu + CTA -->
+        <?php if ($is_logged_in): ?>
+          <!-- User greeting -->
+          <li class="nav-item dropdown ms-lg-3">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" 
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="ovic ovic--user me-1"></span>
+              <span>Hi, <?php echo htmlspecialchars(explode(' ', $user_name)[0]); ?></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <?php if ($is_admin_user): ?>
+                <li><a class="dropdown-item" href="<?php echo $hrefAdmin; ?>">
+                  <i class="fas fa-cog me-2"></i>Admin Panel
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+              <?php endif; ?>
+              <li><a class="dropdown-item" href="<?php echo $base; ?>?page=my-appointments">
+                <i class="fas fa-calendar me-2"></i>My Appointments
+              </a></li>
+              <li><a class="dropdown-item" href="<?php echo $base; ?>?page=my-pets">
+                <i class="fas fa-paw me-2"></i>My Pets
+              </a></li>
+              <li><a class="dropdown-item" href="<?php echo $base; ?>?page=profile">
+                <i class="fas fa-user me-2"></i>Profile
+              </a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+              </a></li>
+            </ul>
+          </li>
+        <?php else: ?>
+          <!-- Login/Register buttons for guests -->
+          <li class="nav-item ms-lg-3">
+            <a class="btn ovbtn ovbtn--soft me-2" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+              <span class="ovic ovic--user"></span><span>Login</span>
+            </a>
+          </li>
+        <?php endif; ?>
+        
         <li class="nav-item ovnav-gap">
-          <a class="btn btn-primary ovbtn ovbtn--pill" href="<?php echo $hrefBook; ?>">
+          <a class="btn btn-primary ovbtn ovbtn--pill" href="<?php echo $base; ?>?page=appointment">
             <span class="ovic ovic--cal"></span><span>Book Now</span>
           </a>
         </li>
@@ -153,5 +196,154 @@ $hrefAdmin     = $base . 'admin';
 
   sections.forEach(([,el])=> io.observe(el));
 })();
+
+// Logout functionality
+function handleLogout() {
+  if (confirm('Are you sure you want to logout?')) {
+    // Create form for CSRF protection
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '<?php echo $base; ?>auth_handler.php';
+    form.style.display = 'none';
+    
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrf_token';
+    csrfInput.value = '<?php echo csrf_token(); ?>';
+    form.appendChild(csrfInput);
+    
+    // Add action
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = 'logout';
+    form.appendChild(actionInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+  }
+}
 </script>
+
+<!-- Login/Register Modal -->
+<?php if (!$is_logged_in): ?>
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <ul class="nav nav-tabs nav-fill w-100" id="authTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-pane" 
+                    type="button" role="tab" aria-controls="login-pane" aria-selected="true">Login</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-pane" 
+                    type="button" role="tab" aria-controls="register-pane" aria-selected="false">Register</button>
+          </li>
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="tab-content" id="authTabsContent">
+          <!-- Login Tab -->
+          <div class="tab-pane fade show active" id="login-pane" role="tabpanel" aria-labelledby="login-tab">
+            <form id="loginForm" action="<?php echo $base; ?>auth_handler.php" method="POST">
+              <input type="hidden" name="action" value="login">
+              <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
+              
+              <div class="mb-3">
+                <label for="loginEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="loginEmail" name="email" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="loginPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="loginPassword" name="password" required>
+              </div>
+              
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Login</button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- Register Tab -->
+          <div class="tab-pane fade" id="register-pane" role="tabpanel" aria-labelledby="register-tab">
+            <form id="registerForm" action="<?php echo $base; ?>auth_handler.php" method="POST">
+              <input type="hidden" name="action" value="register">
+              <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="registerFirstname" class="form-label">First Name</label>
+                  <input type="text" class="form-control" id="registerFirstname" name="firstname" required>
+                </div>
+                <div class="col-md-6">
+                  <label for="registerLastname" class="form-label">Last Name</label>
+                  <input type="text" class="form-control" id="registerLastname" name="lastname" required>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="registerEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="registerEmail" name="email" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="registerPhone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="registerPhone" name="phone" required>
+              </div>
+              
+              <div class="mb-3">
+                <label for="registerPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="registerPassword" name="password" required minlength="6">
+                <div class="form-text">Password must be at least 6 characters long.</div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="registerConfirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="registerConfirmPassword" name="confirm_password" required>
+              </div>
+              
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Register</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
+<!-- Flash Messages -->
+<?php if (isset($_SESSION['flash_message'])): ?>
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 11000;">
+  <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto text-<?php echo $_SESSION['flash_type'] ?? 'info'; ?>">
+        <?php echo $_SESSION['flash_type'] === 'error' ? 'Error' : 'Success'; ?>
+      </strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      <?php echo htmlspecialchars($_SESSION['flash_message']); ?>
+      <?php if (isset($_SESSION['flash_errors'])): ?>
+        <ul class="mb-0 mt-2">
+          <?php foreach ($_SESSION['flash_errors'] as $error): ?>
+            <li><?php echo htmlspecialchars($error); ?></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+    </div>
+  </div>
+</div>
+<?php 
+unset($_SESSION['flash_message']);
+unset($_SESSION['flash_type']);
+unset($_SESSION['flash_errors']);
+endif; 
+?>
 <!-- ========== /NAVBAR ========== -->

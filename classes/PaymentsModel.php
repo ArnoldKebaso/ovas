@@ -422,6 +422,27 @@ class PaymentsModel {
     }
     
     /**
+     * Find payment by M-Pesa checkout request ID
+     * @param string $checkoutRequestId M-Pesa checkout request ID
+     * @return array|false Payment record or false if not found
+     */
+    public function findByCheckoutRequestId($checkoutRequestId) {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT * FROM payments 
+                WHERE mpesa_checkout_request_id = ?
+                LIMIT 1
+            ");
+            $stmt->execute([$checkoutRequestId]);
+            $result = $stmt->fetch();
+            return $result ?: false;
+        } catch (PDOException $e) {
+            error_log("Payments::findByCheckoutRequestId failed: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Get monthly revenue report
      * @param int $year Year for the report
      * @return array Monthly revenue data

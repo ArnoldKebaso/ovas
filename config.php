@@ -49,9 +49,19 @@ if (config('APP_ENV') === 'production') {
 define('BASE_URL', config('BASE_URL', 'http://localhost/ovas/'));
 define('APP_ROOT', __DIR__);
 define('BOOKING_FEE', (int)config('BOOKING_FEE', 500));
-// Legacy database connection - will be moved to initialize.php
-// $db = new DBConnection;
-// $conn = $db->conn;
+
+// Initialize database connection and system settings
+require_once(__DIR__ . '/initialize.php');
+require_once(__DIR__ . '/classes/DBConnection.php');
+require_once(__DIR__ . '/classes/SystemSettings.php');
+
+// Create global $_settings object
+$_settings = new SystemSettings();
+$_settings->load_system_info();
+
+// Legacy database connection for backward compatibility
+$db = new DBConnection;
+$conn = $db->conn;
 
 function redirect($url=''){
 	if(!empty($url))

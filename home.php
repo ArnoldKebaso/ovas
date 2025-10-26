@@ -208,26 +208,26 @@ $hero_images = [
 
       <div class="grid">
         <?php
-          $services = [
-            ['Vaccination','Keep your pets protected with tailored immunization schedules.'],
-            ['Deworming','Regular deworming plans for optimal health.'],
-            ['Grooming','Professional grooming and hygiene care.'],
-            ['Dental Care','Preventive and corrective oral health.'],
-            ['Surgery','Advanced surgical procedures with great care.'],
-            ['Diagnostics','In-house lab tests and imaging.'],
-            ['Pet Boarding','Safe, comfortable, supervised stays.'],
-            ['Check-ups','Regular health examinations.'],
-          ];
-          foreach($services as $svc):
+          // Get services from database
+          require_once 'classes/ServicesModel.php';
+          $servicesModel = new ServicesModel();
+          $popularServices = $servicesModel->popular(6); // Get 6 most popular services
+          
+          foreach($popularServices as $svc):
         ?>
         <div class="card reveal">
           <div class="card-icon">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Zm0 6v8m-4-4h8" stroke="#fff" stroke-width="2"/></svg>
           </div>
-          <h4><?php echo $svc[0] ?></h4>
-          <p><?php echo $svc[1] ?></p>
+          <h4><?php echo htmlspecialchars($svc['name']); ?></h4>
+          <p><?php echo htmlspecialchars($svc['description']); ?></p>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <small class="text-muted">KES <?php echo number_format($svc['fee']); ?></small>
+            <small class="text-muted"><?php echo $svc['duration']; ?> min</small>
+          </div>
           <div style="margin-top:10px">
-            <a href="<?php echo $base_url ?>?page=home#appointment" class="btn btn-primary" style="padding:10px 14px; font-weight:600;">Book Now →</a>
+            <a href="<?php echo $base_url ?>appointment.php?service_id=<?php echo $svc['id']; ?>" 
+               class="btn btn-primary" style="padding:10px 14px; font-weight:600;">Book Now →</a>
           </div>
         </div>
         <?php endforeach; ?>

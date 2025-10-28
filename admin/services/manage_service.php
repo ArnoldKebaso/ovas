@@ -1,14 +1,12 @@
 <?php
 require_once('../../config.php');
+require_once('../../classes/ServicesModel.php');
+
+$servicesModel = new ServicesModel();
+
+$service = null;
 if(isset($_GET['id'])){
-    $qry = $conn->query("SELECT * FROM `service_list` where id = '{$_GET['id']}'");
-    if($qry->num_rows > 0){
-        $res = $qry->fetch_array();
-        foreach($res as $k => $v){
-            if(!is_numeric($k))
-            $$k = $v;
-        }
-    }
+    $service = $servicesModel->getServiceById($_GET['id']);
 }
 ?>
 <style>
@@ -21,48 +19,39 @@ if(isset($_GET['id'])){
 </style>
 <div class="container-fluid">
     <form action="" id="service-form">
-        <input type="hidden" name="id" value="<?php echo isset($id) ? $id : '' ?>">
+        <input type="hidden" name="id" value="<?php echo $service ? $service['id'] : '' ?>">
         <div class="form-group">
-            <label for="name" class="control-label">Service</label>
-            <input type="text" name="name" id="name" class="form-control form-control-border" placeholder="Enter Service" value ="<?php echo isset($name) ? $name : '' ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="category_ids" class="control-label">For Category <small><em>(Pet Types)</em></small></label>
-            <select name="category_ids[]" id="category_ids" class="form-control form-control-border select2" multiple>
-                <?php 
-                $categories = $conn->query("SELECT * FROM category_list where delete_flag = 0 ".(isset($category_ids) && !empty($category_ids) ? " or id in ({$category_ids})" : "")." order by name asc");
-                while($row = $categories->fetch_assoc()):
-                ?>
-                <option value="<?= $row['id'] ?>" <?= isset($category_ids) && in_array($row['id'],explode(',', $category_ids)) ? "selected" : "" ?> <?= $row['delete_flag'] == 1 ? "disabled" : "" ?>><?= ucwords($row['name']) ?></option>
-                <?php endwhile; ?>
-            </select>
+            <label for="name" class="control-label">Service Name</label>
+            <input type="text" name="name" id="name" class="form-control form-control-border" placeholder="Enter Service Name" value="<?php echo $service ? htmlspecialchars($service['name']) : '' ?>" required>
         </div>
         <div class="form-group">
             <label for="description" class="control-label">Description</label>
-            <textarea rows="3" name="description" id="description" class="form-control form-control-sm rounded-0 summernote" data-placeholder="Write the service description here." required><?php echo isset($description) ? $description : '' ?></textarea>
+            <textarea rows="4" name="description" id="description" class="form-control form-control-border" placeholder="Enter service description here."><?php echo $service ? htmlspecialchars($service['description']) : '' ?></textarea>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fee" class="control-label">Fee (KSh)</label>
+                    <input type="number" step="0.01" name="fee" id="fee" class="form-control form-control-border" placeholder="0.00" value="<?php echo $service ? $service['fee'] : '0.00' ?>" required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="duration_min" class="control-label">Duration (Minutes)</label>
+                    <input type="number" name="duration_min" id="duration_min" class="form-control form-control-border" placeholder="30" value="<?php echo $service ? $service['duration_min'] : '30' ?>" required>
+                </div>
+            </div>
         </div>
         <div class="form-group">
-            <label for="fee" class="control-label">Fee</label>
-            <input type="number" step="any" name="fee" id="fee" class="form-control form-control-border text-right" placeholder="Enter Fee" value ="<?php echo isset($fee) ? $fee : 0 ?>" required>
+            <div class="form-check">
+                <input type="checkbox" name="is_active" id="is_active" class="form-check-input" value="1" <?php echo ($service && $service['is_active']) || !$service ? 'checked' : '' ?>>
+                <label for="is_active" class="form-check-label">Active Service</label>
+            </div>
         </div>
     </form>
 </div>
 <script>
     $(function(){
-        $('#uni_modal').on('shown.bs.modal',function(){
-            $('#category_ids').select2({
-                placeholder:"Please Select Pet Type(s) here.",
-                width:'100%',
-                dropdownParent:$('#uni_modal')
-            })
-            $('.summernote').each(function(){
-                var _this = $(this);
-                _this.summernote({
-                    height:'15vh',
-                    placeholder:_this.attr('data-placeholder'),
-                })
-            })
-        })
         $('#uni_modal #service-form').submit(function(e){
             e.preventDefault();
             var _this = $(this)
@@ -71,33 +60,47 @@ if(isset($_GET['id'])){
                 el.addClass("pop-msg alert")
                 el.hide()
             start_loader();
+            
+            // Prepare form data
+            var formData = new FormData();
+            formData.append('id', $('#service-form input[name="id"]').val());
+            formData.append('name', $('#service-form input[name="name"]').val());
+            formData.append('description', $('#service-form textarea[name="description"]').val());
+            formData.append('fee', $('#service-form input[name="fee"]').val());
+            formData.append('duration_min', $('#service-form input[name="duration_min"]').val());
+            formData.append('is_active', $('#service-form input[name="is_active"]').is(':checked') ? 1 : 0);
+
             $.ajax({
-                url:_base_url_+"classes/Master.php?f=save_service",
-				data: new FormData($(this)[0]),
+                url: '../../classes/ServicesModel.php',
+                data: formData,
                 cache: false,
                 contentType: false,
                 processData: false,
                 method: 'POST',
                 type: 'POST',
                 dataType: 'json',
-				error:err=>{
-					console.log(err)
-					alert_toast("An error occured",'error');
-					end_loader();
-				},
+                error:function(err){
+                    console.log(err)
+                    alert_toast("An error occurred", 'error');
+                    end_loader();
+                },
                 success:function(resp){
                     if(resp.status == 'success'){
-                        location.reload();
+                        alert_toast(resp.msg || 'Service saved successfully', 'success');
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1500);
                     }else if(!!resp.msg){
                         el.addClass("alert-danger")
                         el.text(resp.msg)
                         _this.prepend(el)
+                        el.show('slow')
                     }else{
                         el.addClass("alert-danger")
                         el.text("An error occurred due to unknown reason.")
                         _this.prepend(el)
+                        el.show('slow')
                     }
-                    el.show('slow')
                     $('html,body,.modal').animate({scrollTop:0},'fast')
                     end_loader();
                 }

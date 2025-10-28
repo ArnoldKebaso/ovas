@@ -1,8 +1,40 @@
 
 <?php
-  // Safe fallbacks from settings, used only for text
-  $short_name = isset($_settings) ? ($_settings->info('short_name') ?: 'VAP') : 'VAP';
-  $home_url   = "../?page=home";
+require_once('../config.php');
+
+// Handle login form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['username']) && isset($_POST['password'])) {
+        // Use the Login class for authentication
+        require_once('../classes/Login.php');
+        $auth = new Login();
+        
+        $result = json_decode($auth->login(), true);
+        
+        if ($result['status'] === 'success') {
+            // Redirect to admin dashboard
+            header('Location: index.php?page=home');
+            exit;
+        } else {
+            // Set error message in session
+            session_start();
+            $_SESSION['login_error'] = $result['msg'] ?? 'Login failed. Please try again.';
+        }
+    }
+}
+
+// Start session to check if already logged in
+session_start();
+
+// Check if user is already logged in
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1) {
+    header('Location: index.php?page=home');
+    exit;
+}
+
+// Safe fallbacks from settings, used only for text
+$short_name = isset($_settings) ? ($_settings->info('short_name') ?: 'VAP') : 'VAP';
+$home_url   = "../?page=home";
 ?>
 <style>
 /* ===== Admin Login (scoped, matches site theme) ===== */

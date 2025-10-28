@@ -26,64 +26,62 @@
                     <li class="nav-item dropdown">
                       <a href="./" class="nav-link nav-home">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>
-                          Dashboard
-                        </p>
+                        <p>Dashboard</p>
                       </a>
                     </li>
+                    
+                    <li class="nav-header">Appointments & Services</li>
                     <li class="nav-item">
                       <a href="<?php echo base_url ?>admin/?page=appointments" class="nav-link nav-appointments">
                         <i class="nav-icon fas fa-calendar-day"></i>
-                        <p>
-                          Appointment Requests
-                        </p>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a href="<?php echo base_url ?>admin/?page=inquiries" class="nav-link nav-inquiries">
-                        <i class="nav-icon fas fa-question-circle"></i>
-                        <p>
-                          Inquiries
-                        </p>
-                      </a>
-                    </li>
-                    <?php if($_settings->userdata('type') == 1): ?>
-                    <li class="nav-header">Maintenance</li>
-                    <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=categories" class="nav-link nav-categories">
-                        <i class="nav-icon fas fa-table"></i>
-                        <p>
-                          Category List
-                        </p>
+                        <p>Appointments</p>
                       </a>
                     </li>
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=services" class="nav-link nav-services">
                         <i class="nav-icon fas fa-th-list"></i>
-                        <p>
-                          Service List
-                        </p>
+                        <p>Services</p>
                       </a>
                     </li>
+                    
+                    <li class="nav-header">User Management</li>
                     <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=user/list" class="nav-link nav-user_list">
-                        <i class="nav-icon fas fa-users-cog"></i>
-                        <p>
-                          Admin User List
-                        </p>
+                      <a href="<?php echo base_url ?>admin/?page=users" class="nav-link nav-users">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Users</p>
                       </a>
-                
-                      
                     </li>
+                    
+                    <li class="nav-header">Financial</li>
+                    <li class="nav-item">
+                      <a href="<?php echo base_url ?>admin/?page=payments" class="nav-link nav-payments">
+                        <i class="nav-icon fas fa-money-bill-wave"></i>
+                        <p>Payments</p>
+                      </a>
+                    </li>
+                    
+                    <li class="nav-header">Communication</li>
+                    <li class="nav-item">
+                      <a href="<?php echo base_url ?>admin/?page=inquiries" class="nav-link nav-inquiries">
+                        <i class="nav-icon fas fa-question-circle"></i>
+                        <p>Messages & Inquiries</p>
+                      </a>
+                    </li>
+                    
+                    <li class="nav-header">System</li>
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=system_info" class="nav-link nav-system_info">
                         <i class="nav-icon fas fa-cogs"></i>
-                        <p>
-                          Settings
-                        </p>
+                        <p>Settings</p>
                       </a>
                     </li>
-                    <?php endif; ?>
+                    
+                    <li class="nav-item">
+                      <a href="<?php echo base_url ?>admin/logout.php" class="nav-link" onclick="return confirm('Are you sure you want to logout?')">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                        <p>Logout</p>
+                      </a>
+                    </li>
 
                   </ul>
                 </nav>

@@ -3,6 +3,34 @@
  * Services Model - Production Grade PDO Implementation
  */
 
+// Handle direct POST requests to this file
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../initialize.php';
+    $servicesModel = new ServicesModel();
+    
+    // Handle form submission
+    $id = $_POST['id'] ?? null;
+    $data = [
+        'name' => $_POST['name'] ?? '',
+        'description' => $_POST['description'] ?? '',
+        'fee' => floatval($_POST['fee'] ?? 0),
+        'duration_min' => intval($_POST['duration_min'] ?? 30),
+        'is_active' => intval($_POST['is_active'] ?? 1)
+    ];
+    
+    if (empty($id)) {
+        // Create new service
+        $result = $servicesModel->createService($data);
+    } else {
+        // Update existing service
+        $result = $servicesModel->updateService($id, $data);
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode($result);
+    exit;
+}
+
 class ServicesModel {
     private $pdo;
     
@@ -14,22 +42,42 @@ class ServicesModel {
     }
     
     /**
+     * Get all services
+     * @return array List of all services
+     */
+    public function getAllServices() {
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT id, name, description, fee, duration_min, is_active, 
+                       created_at, updated_at
+                FROM services 
+                ORDER BY name
+            ");
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("ServicesModel::getAllServices failed: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
      * Get all active services
      * @return array List of active services
      */
     public function active() {
         try {
             $stmt = $this->pdo->prepare("
-                SELECT id, name, description, fee, duration, category, 
-                       image_path, status, created_at, updated_at
+                SELECT id, name, description, fee, duration_min, is_active, 
+                       created_at, updated_at
                 FROM services 
-                WHERE status = 1
+                WHERE is_active = 1
                 ORDER BY name
             ");
             $stmt->execute();
-            return $stmt->fetchAll();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Services::active failed: " . $e->getMessage());
+            error_log("ServicesModel::active failed: " . $e->getMessage());
             return [];
         }
     }
@@ -42,16 +90,173 @@ class ServicesModel {
     public function find($id) {
         try {
             $stmt = $this->pdo->prepare("
-                SELECT id, name, description, fee, duration, category, 
-                       image_path, status, created_at, updated_at
+                SELECT id, name, description, fee, duration_min, is_active, 
+                       created_at, updated_at
                 FROM services 
                 WHERE id = ?
             ");
             $stmt->execute([$id]);
-            return $stmt->fetch();
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         } catch (PDOException $e) {
-            error_log("Services::find failed: " . $e->getMessage());
+            error_log("ServicesModel::find failed: " . $e->getMessage());
             return null;
+        }
+    }
+    
+    /**
+     * Get service by ID (alias for find)
+     * @param int $id Service ID
+     * @return array|null Service data if found, null otherwise
+     */
+    public function getServiceById($id) {
+        return $this->find($id);
+    }
+    
+    /**
+     * Create a new service
+     * @param array $data Service data
+     * @return array Result with status and message
+     */
+    public function createService($data) {
+        try {
+            $stmt = $this->pdo->prepare("
+                INSERT INTO services (name, description, fee, duration_min, is_active)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            
+            $success = $stmt->execute([
+                $data['name'],
+                $data['description'],
+                $data['fee'],
+                $data['duration_min'],
+                $data['is_active']
+            ]);
+            
+            if ($success) {
+                return [
+                    'status' => 'success',
+                    'msg' => 'Service created successfully',
+                    'id' => $this->pdo->lastInsertId()
+                ];
+            } else {
+                return [
+                    'status' => 'failed',
+                    'msg' => 'Failed to create service'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("ServicesModel::createService failed: " . $e->getMessage());
+            return [
+                'status' => 'failed',
+                'msg' => 'Database error occurred'
+            ];
+        }
+    }
+    
+    /**
+     * Update an existing service
+     * @param int $id Service ID
+     * @param array $data Service data
+     * @return array Result with status and message
+     */
+    public function updateService($id, $data) {
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE services 
+                SET name = ?, description = ?, fee = ?, duration_min = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            ");
+            
+            $success = $stmt->execute([
+                $data['name'],
+                $data['description'],
+                $data['fee'],
+                $data['duration_min'],
+                $data['is_active'],
+                $id
+            ]);
+            
+            if ($success) {
+                return [
+                    'status' => 'success',
+                    'msg' => 'Service updated successfully'
+                ];
+            } else {
+                return [
+                    'status' => 'failed',
+                    'msg' => 'Failed to update service'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("ServicesModel::updateService failed: " . $e->getMessage());
+            return [
+                'status' => 'failed',
+                'msg' => 'Database error occurred'
+            ];
+        }
+    }
+    
+    /**
+     * Delete a service
+     * @param int $id Service ID
+     * @return array Result with status and message
+     */
+    public function deleteService($id) {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM services WHERE id = ?");
+            $success = $stmt->execute([$id]);
+            
+            if ($success) {
+                return [
+                    'status' => 'success',
+                    'msg' => 'Service deleted successfully'
+                ];
+            } else {
+                return [
+                    'status' => 'failed',
+                    'msg' => 'Failed to delete service'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("ServicesModel::deleteService failed: " . $e->getMessage());
+            return [
+                'status' => 'failed',
+                'msg' => 'Cannot delete service - it may be referenced by appointments'
+            ];
+        }
+    }
+    
+    /**
+     * Toggle service status
+     * @param int $id Service ID
+     * @return array Result with status and message
+     */
+    public function toggleStatus($id) {
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE services 
+                SET is_active = NOT is_active, updated_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+            ");
+            $success = $stmt->execute([$id]);
+            
+            if ($success) {
+                return [
+                    'status' => 'success',
+                    'msg' => 'Service status updated successfully'
+                ];
+            } else {
+                return [
+                    'status' => 'failed',
+                    'msg' => 'Failed to update service status'
+                ];
+            }
+        } catch (PDOException $e) {
+            error_log("ServicesModel::toggleStatus failed: " . $e->getMessage());
+            return [
+                'status' => 'failed',
+                'msg' => 'Database error occurred'
+            ];
         }
     }
     

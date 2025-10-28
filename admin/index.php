@@ -1,4 +1,7 @@
-<?php require_once('../config.php'); ?>
+<?php 
+require_once('../config.php'); 
+require_once('inc/auth_check.php'); // Add authentication check
+?>
  <!DOCTYPE html>
 <html lang="en" class="" style="height: auto;">
 <?php require_once('inc/header.php') ?>

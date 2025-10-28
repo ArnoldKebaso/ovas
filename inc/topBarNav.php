@@ -6,8 +6,15 @@
 if (defined('OVAS_TOPBAR_RENDERED')) { return; } // <-- Prevents recursion / multiple renders
 define('OVAS_TOPBAR_RENDERED', true);
 
+// Include session authentication functions
+require_once __DIR__ . '/sess_auth.php';
+
 // Active page (used for highlighting)
 $active = isset($_GET['page']) ? trim($_GET['page']) : 'home';
+
+// Check if user is logged in
+$user = auth_user();
+$isLoggedIn = $user !== null;
 
 // Brand / routes (change if your router uses different slugs)
 $brand = 'VAP';
@@ -18,6 +25,10 @@ $routes = [
   'about_us'        => '?page=about_us',
   'contact_us'      => '?page=contact_us',
   'admin'           => 'admin/login.php',
+  'auth'            => '?page=auth',
+  'dashboard'       => 'dashboard.php',
+  'my_pets'         => 'my_pets.php',
+  'logout'          => 'auth_handler.php?action=logout',
 ];
 ?>
 <style>
@@ -82,6 +93,82 @@ $routes = [
 }
 .btn-primary:hover { transform:translateY(-1px); box-shadow:0 14px 28px rgba(47,101,246,.28); }
 
+/* Profile dropdown */
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 2px solid #dfe7ff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  text-decoration: none;
+  color: #1f2937;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+.profile-btn:hover {
+  background: #f3f6ff;
+  color: #1f4ef0;
+}
+.profile-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2f65f6, #22c1c3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #e6ecf7;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(15, 23, 42, 0.1);
+  min-width: 200px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+}
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #1f2937;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.15s ease;
+}
+.dropdown-item:hover {
+  background-color: #f8fafc;
+}
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+.dropdown-item.logout:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
 /* Icons (simple emoji fallback — replace with your icon font if you want) */
 .ico { font-style:normal; }
 
@@ -125,10 +212,42 @@ $routes = [
           <li><a class="ovas-link <?php echo $active==='contact_us'?'active':''?>" href="<?php echo $routes['contact_us']?>">Contact</a></li>
         </ul>
 
-        <!-- Actions (Admin + Book Now) -->
+        <!-- Actions (Admin + Book Now + Profile) -->
         <div class="ovas-actions">
+          <?php if ($isLoggedIn): ?>
+            <!-- User Profile Dropdown -->
+            <div class="profile-dropdown">
+              <a href="#" class="profile-btn" id="profileToggle">
+                <div class="profile-avatar">
+                  <?= strtoupper(substr($user['firstname'] ?? 'U', 0, 1)) ?>
+                </div>
+                <span><?= htmlspecialchars($user['firstname'] ?? 'User') ?></span>
+                <span class="ico">⌄</span>
+              </a>
+              <div class="dropdown-menu" id="profileMenu">
+                <a class="dropdown-item" href="<?= $routes['dashboard'] ?>">
+                  <span class="ico">📊</span> Dashboard
+                </a>
+                <a class="dropdown-item" href="<?= $routes['my_pets'] ?>">
+                  <span class="ico">🐾</span> My Pets
+                </a>
+                <a class="dropdown-item" href="<?= $routes['book_appointment'] ?>">
+                  <span class="ico">📅</span> Book Appointment
+                </a>
+                <a class="dropdown-item logout" href="<?= $routes['logout'] ?>" onclick="return confirm('Are you sure you want to logout?')">
+                  <span class="ico">🚪</span> Logout
+                </a>
+              </div>
+            </div>
+          <?php else: ?>
+            <!-- Login/Register for guests -->
+            <a class="btn btn-outline" href="<?php echo $routes['auth'] ?>">
+              <span class="ico">👥</span> Login
+            </a>
+          <?php endif; ?>
+          
           <a class="btn btn-outline" href="<?php echo $routes['admin'] ?>">
-            <span class="ico">👥</span> Admin
+            <span class="ico">⚙️</span> Admin
           </a>
           <a class="btn btn-primary" href="<?php echo $routes['book_appointment'] ?>">
             <span class="ico">📅</span> Book Now
@@ -156,5 +275,24 @@ $routes = [
   btn.addEventListener('click', () => list.classList.toggle('open'));
   // Close on link click (mobile)
   list.querySelectorAll('a').forEach(a => a.addEventListener('click', () => list.classList.remove('open')));
+})();
+
+// Profile dropdown toggle
+(function(){
+  const toggle = document.getElementById('profileToggle');
+  const menu = document.getElementById('profileMenu');
+  if(!toggle || !menu) return;
+  
+  toggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    menu.classList.toggle('show');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.remove('show');
+    }
+  });
 })();
 </script>

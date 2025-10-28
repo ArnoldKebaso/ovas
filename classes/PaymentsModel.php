@@ -3,6 +3,35 @@
  * Payments Model - Production Grade PDO Implementation
  */
 
+// Handle direct POST requests to this file
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../initialize.php';
+    $paymentsModel = new PaymentsModel();
+    
+    // Handle form submission
+    $id = $_POST['id'] ?? null;
+    $data = [
+        'appointment_id' => intval($_POST['appointment_id'] ?? 0),
+        'amount' => floatval($_POST['amount'] ?? 0),
+        'payment_method' => $_POST['payment_method'] ?? '',
+        'status' => $_POST['status'] ?? 'pending',
+        'transaction_ref' => $_POST['transaction_ref'] ?? '',
+        'notes' => $_POST['notes'] ?? ''
+    ];
+    
+    if (empty($id)) {
+        // Create new payment
+        $result = $paymentsModel->createPayment($data);
+    } else {
+        // Update existing payment
+        $result = $paymentsModel->updatePayment($id, $data);
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode($result);
+    exit;
+}
+
 class PaymentsModel {
     private $pdo;
     
@@ -466,6 +495,132 @@ class PaymentsModel {
         } catch (PDOException $e) {
             error_log("Payments::getMonthlyRevenue failed: " . $e->getMessage());
             return [];
+        }
+    }
+    
+    /**
+     * Create new payment (for admin forms)
+     * @param array $data Payment data
+     * @return array Result with status and message
+     */
+    public function createPayment($data) {
+        try {
+            // Validate required fields
+            if (empty($data['appointment_id']) || empty($data['amount']) || empty($data['payment_method'])) {
+                return ['status' => 'error', 'msg' => 'Appointment, amount, and payment method are required'];
+            }
+            
+            // Get appointment details for user_id
+            $apptStmt = $this->pdo->prepare("SELECT user_id FROM appointments WHERE id = ?");
+            $apptStmt->execute([$data['appointment_id']]);
+            $appointment = $apptStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$appointment) {
+                return ['status' => 'error', 'msg' => 'Invalid appointment selected'];
+            }
+            
+            $stmt = $this->pdo->prepare("
+                INSERT INTO payments (user_id, appointment_id, amount, payment_method, status, transaction_ref, notes, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            ");
+            
+            $result = $stmt->execute([
+                $appointment['user_id'],
+                $data['appointment_id'],
+                $data['amount'],
+                $data['payment_method'],
+                $data['status'],
+                $data['transaction_ref'],
+                $data['notes']
+            ]);
+            
+            if ($result) {
+                // Update appointment status to paid if payment is completed
+                if ($data['status'] === 'completed') {
+                    $updateAppt = $this->pdo->prepare("UPDATE appointments SET status = 'paid' WHERE id = ?");
+                    $updateAppt->execute([$data['appointment_id']]);
+                }
+                
+                return ['status' => 'success', 'msg' => 'Payment created successfully', 'id' => $this->pdo->lastInsertId()];
+            } else {
+                return ['status' => 'error', 'msg' => 'Failed to create payment'];
+            }
+            
+        } catch (PDOException $e) {
+            error_log("PaymentsModel::createPayment failed: " . $e->getMessage());
+            return ['status' => 'error', 'msg' => 'Database error occurred'];
+        }
+    }
+    
+    /**
+     * Update payment
+     * @param int $id Payment ID
+     * @param array $data Payment data
+     * @return array Result with status and message
+     */
+    public function updatePayment($id, $data) {
+        try {
+            // Validate required fields
+            if (empty($data['appointment_id']) || empty($data['amount']) || empty($data['payment_method'])) {
+                return ['status' => 'error', 'msg' => 'Appointment, amount, and payment method are required'];
+            }
+            
+            $stmt = $this->pdo->prepare("
+                UPDATE payments 
+                SET appointment_id = ?, amount = ?, payment_method = ?, status = ?, transaction_ref = ?, notes = ?, updated_at = NOW()
+                WHERE id = ?
+            ");
+            
+            $result = $stmt->execute([
+                $data['appointment_id'],
+                $data['amount'],
+                $data['payment_method'],
+                $data['status'],
+                $data['transaction_ref'],
+                $data['notes'],
+                $id
+            ]);
+            
+            if ($result) {
+                // Update appointment status based on payment status
+                if ($data['status'] === 'completed') {
+                    $updateAppt = $this->pdo->prepare("UPDATE appointments SET status = 'paid' WHERE id = ?");
+                    $updateAppt->execute([$data['appointment_id']]);
+                } elseif ($data['status'] === 'failed') {
+                    $updateAppt = $this->pdo->prepare("UPDATE appointments SET status = 'confirmed' WHERE id = ? AND status = 'paid'");
+                    $updateAppt->execute([$data['appointment_id']]);
+                }
+                
+                return ['status' => 'success', 'msg' => 'Payment updated successfully'];
+            } else {
+                return ['status' => 'error', 'msg' => 'Failed to update payment'];
+            }
+            
+        } catch (PDOException $e) {
+            error_log("PaymentsModel::updatePayment failed: " . $e->getMessage());
+            return ['status' => 'error', 'msg' => 'Database error occurred'];
+        }
+    }
+    
+    /**
+     * Delete payment
+     * @param int $id Payment ID
+     * @return array Result with status and message
+     */
+    public function deletePayment($id) {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM payments WHERE id = ?");
+            $result = $stmt->execute([$id]);
+            
+            if ($result && $stmt->rowCount() > 0) {
+                return ['status' => 'success', 'msg' => 'Payment deleted successfully'];
+            } else {
+                return ['status' => 'error', 'msg' => 'Payment not found'];
+            }
+            
+        } catch (PDOException $e) {
+            error_log("PaymentsModel::deletePayment failed: " . $e->getMessage());
+            return ['status' => 'error', 'msg' => 'Database error occurred'];
         }
     }
 }

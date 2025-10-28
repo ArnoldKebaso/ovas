@@ -48,6 +48,16 @@ class Login extends DBConnection {
 				}
 				$this->settings->set_userdata('login_type', 1);
 				$this->settings->set_userdata('logged_in', true);
+				$this->settings->set_userdata('is_admin', $res['is_admin']);
+				
+				// Also set direct session variables for auth_check
+				$_SESSION['logged_in'] = true;
+				$_SESSION['is_admin'] = $res['is_admin'];
+				$_SESSION['status'] = $res['status'];
+				$_SESSION['id'] = $res['id'];
+				$_SESSION['name'] = $res['name'];
+				$_SESSION['email'] = $res['email'];
+				$_SESSION['phone'] = $res['phone'];
 				
 				return json_encode(array('status'=>'success'));
 			} else {

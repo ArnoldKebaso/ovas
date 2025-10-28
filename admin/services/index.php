@@ -22,71 +22,114 @@ $services = $servicesModel->getAllServices();
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    .service-card {
+        transition: all 0.3s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+    .table-responsive {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .fee-badge {
+        font-size: 1rem;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
 </style>
 
-<div class="card card-outline card-primary rounded-0 shadow">
-	<div class="card-header">
-		<h3 class="card-title">List of Services</h3>
-		<div class="card-tools">
-			<a href="javascript:void(0)" id="create_new" class="btn btn-flat btn-sm btn-primary">
-				<span class="fas fa-plus"></span> Add New Service
-			</a>
-		</div>
-	</div>
-	<div class="card-body">
-		<div class="container-fluid">
-			<table class="table table-hover table-striped" id="servicesTable">
-				<thead>
-					<tr>
-						<th width="5%">#</th>
-						<th width="20%">Service Name</th>
-						<th width="25%">Description</th>
-						<th width="15%">Duration</th>
-						<th width="10%">Fee (KSh)</th>
-						<th width="10%">Status</th>
-						<th width="15%">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
+<div class="card service-card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-th-list mr-2"></i>
+                    Services Management
+                </h3>
+                <p class="mb-0 mt-1 opacity-75">Manage veterinary services and pricing</p>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="create_new" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus mr-1"></i> Add New Service
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="servicesTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th width="5%" class="border-0">#</th>
+                        <th width="25%" class="border-0">Service</th>
+                        <th width="30%" class="border-0">Description</th>
+                        <th width="10%" class="border-0">Duration</th>
+                        <th width="15%" class="border-0">Fee</th>
+                        <th width="10%" class="border-0">Status</th>
+                        <th width="5%" class="border-0">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
 					<?php if (!empty($services)): ?>
 						<?php foreach ($services as $index => $service): ?>
 							<tr>
-								<td class="text-center"><?php echo $index + 1; ?></td>
+								<td class="text-center font-weight-bold text-muted"><?php echo $index + 1; ?></td>
 								<td>
-									<strong><?php echo htmlspecialchars($service['name']); ?></strong>
-									<?php if (!empty($service['category'])): ?>
-										<br><small class="text-muted"><?php echo htmlspecialchars($service['category']); ?></small>
-									<?php endif; ?>
-								</td>
-								<td>
-									<div class="service-description" title="<?php echo htmlspecialchars($service['description']); ?>">
-										<?php echo htmlspecialchars($service['description']); ?>
+									<div class="d-flex align-items-center">
+										<div class="service-icon bg-primary text-white rounded-circle mr-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+											<i class="fas fa-stethoscope"></i>
+										</div>
+										<div>
+											<strong class="d-block"><?php echo htmlspecialchars($service['name']); ?></strong>
+											<?php if (!empty($service['category'])): ?>
+												<small class="text-muted">
+													<i class="fas fa-tag mr-1"></i><?php echo htmlspecialchars($service['category']); ?>
+												</small>
+											<?php endif; ?>
+										</div>
 									</div>
 								</td>
 								<td>
-									<?php echo $service['duration_minutes']; ?> minutes
-								</td>
-								<td class="text-right">
-									<?php echo number_format($service['fee'], 2); ?>
+									<div class="service-description" title="<?php echo htmlspecialchars($service['description']); ?>">
+										<small class="text-muted"><?php echo htmlspecialchars($service['description']); ?></small>
+									</div>
 								</td>
 								<td>
-									<span class="badge status-badge <?php echo $service['is_active'] ? 'badge-success' : 'badge-secondary'; ?>">
+									<span class="badge badge-info px-3 py-2">
+										<i class="fas fa-clock mr-1"></i><?php echo $service['duration_minutes']; ?> mins
+									</span>
+								</td>
+								<td>
+									<span class="fee-badge badge badge-success">
+										KSh <?php echo number_format($service['fee'], 2); ?>
+									</span>
+								</td>
+								<td>
+									<span class="badge status-badge <?php echo $service['is_active'] ? 'badge-success' : 'badge-secondary'; ?> px-3 py-2">
+										<i class="fas fa-<?php echo $service['is_active'] ? 'check-circle' : 'times-circle'; ?> mr-1"></i>
 										<?php echo $service['is_active'] ? 'Active' : 'Inactive'; ?>
 									</span>
 								</td>
-								<td align="center">
+								<td class="text-center">
 									<div class="btn-group">
-										<button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
-											Action
-											<span class="sr-only">Toggle Dropdown</span>
+										<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+											<i class="fas fa-cog"></i>
 										</button>
-										<div class="dropdown-menu" role="menu">
+										<div class="dropdown-menu">
 											<a class="dropdown-item view_data" href="javascript:void(0)" data-id="<?php echo $service['id']; ?>">
-												<span class="fa fa-eye text-dark"></span> View
+												<i class="fa fa-eye text-info"></i> View Details
 											</a>
 											<div class="dropdown-divider"></div>
 											<a class="dropdown-item edit_data" href="javascript:void(0)" data-id="<?php echo $service['id']; ?>">
-												<span class="fa fa-edit text-primary"></span> Edit
+												<i class="fa fa-edit text-primary"></i> Edit Service
 											</a>
 											<div class="dropdown-divider"></div>
 											<a class="dropdown-item toggle_status" href="javascript:void(0)" 

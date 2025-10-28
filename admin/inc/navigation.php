@@ -1,10 +1,38 @@
+<style>
+    .brand-link {
+        transition: all 0.3s ease;
+    }
+    .brand-link:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    .nav-link {
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        margin: 2px 0;
+    }
+    .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateX(5px);
+    }
+    .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.2);
+        font-weight: bold;
+    }
+    .nav-header {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 15px 0 10px 0;
+    }
 </style>
 <!-- Main Sidebar Container -->
-      <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand bg-gradient-black">
+      <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand bg-gradient-dark">
         <!-- Brand Logo -->
-        <a href="<?php echo base_url ?>admin" class="brand-link bg-transparent text-sm border-info shadow-sm bg-primary">
-        <img src="<?php echo validate_image($_settings->info('logo'))?>" alt="Store Logo" class="brand-image img-circle elevation-3 bg-black" style="width: 1.8rem;height: 1.8rem;max-height: unset;object-fit:scale-down;object-position:center center">
-        <span class="brand-text font-weight-light"><?php echo $_settings->info('short_name') ?></span>
+        <a href="<?php echo base_url ?>admin" class="brand-link bg-transparent text-sm border-bottom border-primary shadow-sm">
+        <img src="<?php echo validate_image($_settings->info('logo'))?>" alt="Store Logo" class="brand-image img-circle elevation-3 bg-white" style="width: 1.8rem;height: 1.8rem;max-height: unset;object-fit:scale-down;object-position:center center">
+        <span class="brand-text font-weight-bold text-white"><?php echo $_settings->info('short_name') ?></span>
         </a>
         <!-- Sidebar -->
         <div class="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-transition os-host-scrollbar-horizontal-hidden">
@@ -44,11 +72,17 @@
                       </a>
                     </li>
                     
-                    <li class="nav-header">User Management</li>
+                    <li class="nav-header">Pets & Customers</li>
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=users" class="nav-link nav-users">
                         <i class="nav-icon fas fa-users"></i>
                         <p>Users</p>
+                      </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a href="<?php echo base_url ?>admin/?page=pets" class="nav-link nav-pets">
+                        <i class="nav-icon fas fa-paw"></i>
+                        <p>Pets</p>
                       </a>
                     </li>
                     

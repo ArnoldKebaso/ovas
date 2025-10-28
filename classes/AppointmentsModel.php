@@ -3,6 +3,36 @@
  * Appointments Model - Production Grade PDO Implementation
  */
 
+// Handle direct POST requests to this file
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    require_once __DIR__ . '/../initialize.php';
+    $appointmentsModel = new AppointmentsModel();
+    
+    // Handle form submission
+    $id = $_POST['id'] ?? null;
+    $data = [
+        'user_id' => intval($_POST['user_id'] ?? 0),
+        'service_id' => intval($_POST['service_id'] ?? 0),
+        'schedule_date' => $_POST['schedule_date'] ?? '',
+        'start_time' => $_POST['start_time'] ?? '',
+        'fee' => floatval($_POST['fee'] ?? 0),
+        'status' => $_POST['status'] ?? 'pending',
+        'notes' => $_POST['notes'] ?? ''
+    ];
+    
+    if (empty($id)) {
+        // Create new appointment
+        $result = $appointmentsModel->createAppointment($data);
+    } else {
+        // Update existing appointment
+        $result = $appointmentsModel->updateAppointment($id, $data);
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode($result);
+    exit;
+}
+
 class AppointmentsModel {
     private $pdo;
     
@@ -475,6 +505,137 @@ class AppointmentsModel {
                 'total' => 0, 'pending' => 0, 'confirmed' => 0, 
                 'completed' => 0, 'cancelled' => 0, 'paid' => 0
             ];
+        }
+    }
+    
+    /**
+     * Create new appointment (for admin forms)
+     * @param array $data Appointment data
+     * @return array Result with status and message
+     */
+    public function createAppointment($data) {
+        try {
+            // Validate required fields
+            if (empty($data['user_id']) || empty($data['service_id']) || empty($data['schedule_date']) || empty($data['start_time'])) {
+                return ['status' => 'error', 'msg' => 'All required fields must be filled'];
+            }
+            
+            // Generate unique appointment code
+            $date = $data['schedule_date'];
+            $dateCode = date('Ymd', strtotime($date));
+            
+            // Find next available number for this date
+            $stmt = $this->pdo->prepare("SELECT MAX(CAST(SUBSTRING(code, -3) AS UNSIGNED)) FROM appointments WHERE code LIKE ?");
+            $stmt->execute([$dateCode . '%']);
+            $maxNum = $stmt->fetchColumn() ?: 0;
+            $nextNum = str_pad($maxNum + 1, 3, '0', STR_PAD_LEFT);
+            $code = $dateCode . $nextNum;
+            
+            // Calculate end time based on service duration
+            $serviceStmt = $this->pdo->prepare("SELECT duration_min FROM services WHERE id = ?");
+            $serviceStmt->execute([$data['service_id']]);
+            $duration = $serviceStmt->fetchColumn() ?: 30; // Default 30 minutes
+            
+            $endTime = date('H:i:s', strtotime($data['start_time'] . ' +' . $duration . ' minutes'));
+            
+            $stmt = $this->pdo->prepare("
+                INSERT INTO appointments (user_id, service_id, schedule_date, start_time, end_time, fee, status, notes, code, created_at, updated_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+            ");
+            
+            $result = $stmt->execute([
+                $data['user_id'],
+                $data['service_id'],
+                $data['schedule_date'],
+                $data['start_time'],
+                $endTime,
+                $data['fee'],
+                $data['status'],
+                $data['notes'],
+                $code
+            ]);
+            
+            if ($result) {
+                return ['status' => 'success', 'msg' => 'Appointment created successfully', 'id' => $this->pdo->lastInsertId(), 'code' => $code];
+            } else {
+                return ['status' => 'error', 'msg' => 'Failed to create appointment'];
+            }
+            
+        } catch (PDOException $e) {
+            error_log("AppointmentsModel::createAppointment failed: " . $e->getMessage());
+            return ['status' => 'error', 'msg' => 'Database error occurred'];
+        }
+    }
+    
+    /**
+     * Update appointment
+     * @param int $id Appointment ID
+     * @param array $data Appointment data
+     * @return array Result with status and message
+     */
+    public function updateAppointment($id, $data) {
+        try {
+            // Validate required fields
+            if (empty($data['user_id']) || empty($data['service_id']) || empty($data['schedule_date']) || empty($data['start_time'])) {
+                return ['status' => 'error', 'msg' => 'All required fields must be filled'];
+            }
+            
+            // Calculate end time based on service duration
+            $serviceStmt = $this->pdo->prepare("SELECT duration_min FROM services WHERE id = ?");
+            $serviceStmt->execute([$data['service_id']]);
+            $duration = $serviceStmt->fetchColumn() ?: 30; // Default 30 minutes
+            
+            $endTime = date('H:i:s', strtotime($data['start_time'] . ' +' . $duration . ' minutes'));
+            
+            $stmt = $this->pdo->prepare("
+                UPDATE appointments 
+                SET user_id = ?, service_id = ?, schedule_date = ?, start_time = ?, end_time = ?, fee = ?, status = ?, notes = ?, updated_at = NOW()
+                WHERE id = ?
+            ");
+            
+            $result = $stmt->execute([
+                $data['user_id'],
+                $data['service_id'],
+                $data['schedule_date'],
+                $data['start_time'],
+                $endTime,
+                $data['fee'],
+                $data['status'],
+                $data['notes'],
+                $id
+            ]);
+            
+            if ($result) {
+                return ['status' => 'success', 'msg' => 'Appointment updated successfully'];
+            } else {
+                return ['status' => 'error', 'msg' => 'Failed to update appointment'];
+            }
+            
+        } catch (PDOException $e) {
+            error_log("AppointmentsModel::updateAppointment failed: " . $e->getMessage());
+            return ['status' => 'error', 'msg' => 'Database error occurred'];
+        }
+    }
+    
+    /**
+     * Delete appointment
+     * @param int $id Appointment ID
+     * @return array Result with status and message
+     */
+    public function deleteAppointment($id) {
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM appointments WHERE id = ?");
+            $result = $stmt->execute([$id]);
+            
+            if ($result && $stmt->rowCount() > 0) {
+                return ['status' => 'success', 'msg' => 'Appointment deleted successfully'];
+            } else {
+                return ['status' => 'error', 'msg' => 'Appointment not found'];
+            }
+            
+        } catch (PDOException $e) {
+            error_log("AppointmentsModel::deleteAppointment failed: " . $e->getMessage());
+            return ['status' => 'error', 'msg' => 'Database error occurred'];
         }
     }
 }

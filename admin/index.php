@@ -1,6 +1,12 @@
 <?php 
 require_once('../config.php'); 
-require_once('inc/auth_check.php'); // Add authentication check
+require_once('inc/auth_check.php');
+
+// Perform authentication check
+if (!check_admin_auth()) {
+    // User is not authenticated, redirect handled by check_admin_auth()
+    exit;
+}
 ?>
  <!DOCTYPE html>
 <html lang="en" class="" style="height: auto;">

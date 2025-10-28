@@ -4,20 +4,71 @@
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
+    background-color: #f4f6f9;
 }
 
 /* Header improvements */
 .main-header {
     z-index: 1030;
+    border-bottom: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }
 
 /* Content improvements */
 .content {
-    padding: 1rem;
+    padding: 1.5rem;
+}
+
+.content-wrapper {
+    background-color: #f4f6f9;
 }
 
 .container {
     max-width: 1200px;
+}
+
+/* Card improvements */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    border-bottom: none;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 1.5rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Table improvements */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    padding: 1rem 0.75rem;
+}
+
+.table td {
+    border-top: 1px solid #f8f9fa;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
 }
 
 /* Custom button styles */
@@ -207,4 +258,108 @@ body {
     .table tbody tr:hover {
         background-color: #4a5568;
     }
+}
+
+/* Additional OVAS Admin Improvements */
+.btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Badge improvements */
+.badge {
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.7rem;
+    padding: 0.5rem 0.75rem;
+}
+
+/* Sidebar improvements */
+.main-sidebar {
+    box-shadow: 2px 0 6px rgba(0,0,0,.1);
+}
+
+.nav-sidebar .nav-item .nav-link {
+    border-radius: 6px;
+    margin: 2px 0;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.nav-sidebar .nav-item .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+.nav-sidebar .nav-item .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+/* Border utilities */
+.border-left-primary {
+    border-left: 4px solid #007bff !important;
+}
+
+.border-left-success {
+    border-left: 4px solid #28a745 !important;
+}
+
+.border-left-info {
+    border-left: 4px solid #17a2b8 !important;
+}
+
+.border-left-warning {
+    border-left: 4px solid #ffc107 !important;
+}
+
+.border-left-danger {
+    border-left: 4px solid #dc3545 !important;
+}
+
+/* Avatar styles */
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Modal improvements */
+.modal-content {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(0,0,0,.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #f1f3f4;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Form improvements */
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #e3e6f0;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Animation utilities */
+.hover-lift:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }

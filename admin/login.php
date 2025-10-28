@@ -166,10 +166,10 @@ $home_url   = "../?page=home";
         <!-- Keep your backend contract: post to login.php (adjust if your handler differs) -->
         <form id="login-frm" action="login.php" method="post" autocomplete="on">
           <div class="field">
-            <label for="username">Username</label>
+            <label for="username">Email Address</label>
             <div class="ctrl">
-              <span class="icon">👤</span>
-              <input type="text" id="username" name="username" placeholder="admin" required autofocus>
+              <span class="icon">�</span>
+              <input type="email" id="username" name="username" placeholder="admin@ovas.test" required autofocus>
             </div>
           </div>
 

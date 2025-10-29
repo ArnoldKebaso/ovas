@@ -1,165 +1,111 @@
-<style>
-    .brand-link {
-        transition: all 0.3s ease;
-    }
-    .brand-link:hover {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-    }
-    .nav-link {
-        transition: all 0.3s ease;
-        border-radius: 5px;
-        margin: 2px 0;
-    }
-    .nav-link:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        transform: translateX(5px);
-    }
-    .nav-link.active {
-        background-color: rgba(255, 255, 255, 0.2);
-        font-weight: bold;
-    }
-    .nav-header {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.75rem;
-        font-weight: bold;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin: 15px 0 10px 0;
-    }
-</style>
-<!-- Main Sidebar Container -->
-      <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand bg-gradient-dark">
-        <!-- Brand Logo -->
-        <a href="<?php echo base_url ?>admin" class="brand-link bg-transparent text-sm border-bottom border-primary shadow-sm">
-        <img src="<?php echo validate_image($_settings->info('logo'))?>" alt="Store Logo" class="brand-image img-circle elevation-3 bg-white" style="width: 1.8rem;height: 1.8rem;max-height: unset;object-fit:scale-down;object-position:center center">
-        <span class="brand-text font-weight-bold text-white"><?php echo $_settings->info('short_name') ?></span>
-        </a>
-        <!-- Sidebar -->
-        <div class="sidebar os-host os-theme-light os-host-overflow os-host-overflow-y os-host-resize-disabled os-host-transition os-host-scrollbar-horizontal-hidden">
-          <div class="os-resize-observer-host observed">
-            <div class="os-resize-observer" style="left: 0px; right: auto;"></div>
-          </div>
-          <div class="os-size-auto-observer observed" style="height: calc(100% + 1px); float: left;">
-            <div class="os-resize-observer"></div>
-          </div>
-          <div class="os-content-glue" style="margin: 0px -8px; width: 249px; height: 646px;"></div>
-          <div class="os-padding">
-            <div class="os-viewport os-viewport-native-scrollbars-invisible" style="overflow-y: scroll;">
-              <div class="os-content" style="padding: 0px 8px; height: 100%; width: 100%;">
-                <!-- Sidebar user panel (optional) -->
-                <div class="clearfix"></div>
-                <!-- Sidebar Menu -->
-                <nav class="mt-4">
-                   <ul class="nav nav-pills nav-sidebar flex-column text-sm nav-compact nav-flat nav-child-indent nav-collapse-hide-child" data-widget="treeview" role="menu" data-accordion="false">
-                    <li class="nav-item dropdown">
-                      <a href="./" class="nav-link nav-home">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
-                      </a>
-                    </li>
-                    
-                    <li class="nav-header">Appointments & Services</li>
-                    <li class="nav-item">
-                      <a href="<?php echo base_url ?>admin/?page=appointments" class="nav-link nav-appointments">
-                        <i class="nav-icon fas fa-calendar-day"></i>
-                        <p>Appointments</p>
-                      </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=services" class="nav-link nav-services">
-                        <i class="nav-icon fas fa-th-list"></i>
-                        <p>Services</p>
-                      </a>
-                    </li>
-                    
-                    <li class="nav-header">Pets & Customers</li>
-                    <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=users" class="nav-link nav-users">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Users</p>
-                      </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=pets" class="nav-link nav-pets">
-                        <i class="nav-icon fas fa-paw"></i>
-                        <p>Pets</p>
-                      </a>
-                    </li>
-                    
-                    <li class="nav-header">Financial</li>
-                    <li class="nav-item">
-                      <a href="<?php echo base_url ?>admin/?page=payments" class="nav-link nav-payments">
-                        <i class="nav-icon fas fa-money-bill-wave"></i>
-                        <p>Payments</p>
-                      </a>
-                    </li>
-                    
-                    <li class="nav-header">Communication</li>
-                    <li class="nav-item">
-                      <a href="<?php echo base_url ?>admin/?page=inquiries" class="nav-link nav-inquiries">
-                        <i class="nav-icon fas fa-question-circle"></i>
-                        <p>Messages & Inquiries</p>
-                      </a>
-                    </li>
-                    
-                    <li class="nav-header">System</li>
-                    <li class="nav-item dropdown">
-                      <a href="<?php echo base_url ?>admin/?page=system_info" class="nav-link nav-system_info">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>Settings</p>
-                      </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                      <a href="<?php echo base_url ?>admin/logout.php" class="nav-link" onclick="return confirm('Are you sure you want to logout?')">
-                        <i class="nav-icon fas fa-sign-out-alt"></i>
-                        <p>Logout</p>
-                      </a>
-                    </li>
+<?php
+if (!isset($_settings)) require_once __DIR__ . '/sess_auth.php';
 
-                  </ul>
-                </nav>
-                <!-- /.sidebar-menu -->
-              </div>
-            </div>
-          </div>
-          <div class="os-scrollbar os-scrollbar-horizontal os-scrollbar-unusable os-scrollbar-auto-hidden">
-            <div class="os-scrollbar-track">
-              <div class="os-scrollbar-handle" style="width: 100%; transform: translate(0px, 0px);"></div>
-            </div>
-          </div>
-          <div class="os-scrollbar os-scrollbar-vertical os-scrollbar-auto-hidden">
-            <div class="os-scrollbar-track">
-              <div class="os-scrollbar-handle" style="height: 55.017%; transform: translate(0px, 0px);"></div>
-            </div>
-          </div>
-          <div class="os-scrollbar-corner"></div>
-        </div>
-        <!-- /.sidebar -->
-      </aside>
-      <script>
-        var page;
-    $(document).ready(function(){
-      page = '<?php echo isset($_GET['page']) ? $_GET['page'] : 'home' ?>';
-      page = page.replace(/\//gi,'_');
+// Use helpers/consts from header.php
+$appName  = $_settings->info('short_name') ?: ($_settings->info('name') ?: 'OVAS');
+$userName = trim((string)($_settings->userdata('firstname') ?? '') . ' ' . (string)($_settings->userdata('lastname') ?? ''));
+if (!$userName) $userName = $_settings->userdata('username') ?? 'Admin';
+$avatar   = safe_img($_settings->userdata('avatar') ?? '', OVAS_PH_AVATAR);
+$userType = (int)($_settings->userdata('type') ?? 1);
+$current  = $_GET['page'] ?? 'home';
 
-      if($('.nav-link.nav-'+page).length > 0){
-             $('.nav-link.nav-'+page).addClass('active')
-        if($('.nav-link.nav-'+page).hasClass('tree-item') == true){
-            $('.nav-link.nav-'+page).closest('.nav-treeview').siblings('a').addClass('active')
-          $('.nav-link.nav-'+page).closest('.nav-treeview').parent().addClass('menu-open')
-        }
-        if($('.nav-link.nav-'+page).hasClass('nav-is-tree') == true){
-          $('.nav-link.nav-'+page).parent().addClass('menu-open')
-        }
+function is_active($needle, $current){
+  if ($needle === 'home') return ($current === 'home' || $current === '');
+  return (strpos($current ?? '', $needle) !== false);
+}
 
-      }
-      
-		$('#receive-nav').click(function(){
-      $('#uni_modal').on('shown.bs.modal',function(){
-        $('#find-transaction [name="tracking_code"]').focus();
-      })
-			uni_modal("Enter Tracking Number","transaction/find_transaction.php");
-		})
-    })
-  </script>
+// Optional: small badge
+$pendingAppointments = 0;
+try {
+  if (class_exists('AppointmentsModel')) {
+    $am = new AppointmentsModel();
+    if (method_exists($am,'countPending'))       $pendingAppointments = (int)$am->countPending();
+    elseif (method_exists($am,'countByStatus'))  $pendingAppointments = (int)$am->countByStatus('pending');
+  }
+} catch(Throwable $e){ $pendingAppointments=0; }
+?>
+<aside class="main-sidebar elevation-4 sidebar-dark-primary">
+  <!-- Brand (text only to avoid double logo) -->
+  <a href="<?php echo base_url ?>" class="brand-link">
+    <span class="brand-text font-weight-light"><strong><?php echo htmlspecialchars($appName) ?></strong></span>
+  </a>
+
+  <div class="sidebar">
+    <!-- User panel -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex align-items-center">
+      <div class="image">
+        <img src="<?php echo $avatar ?>" class="img-circle elevation-2" alt="User" style="width:35px;height:35px;" onerror="this.src='<?php echo OVAS_PH_AVATAR ?>'">
+      </div>
+      <div class="info">
+        <a href="<?php echo base_url ?>?page=profile" class="d-block"><?php echo htmlspecialchars($userName) ?></a>
+      </div>
+    </div>
+
+    <!-- Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="true">
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>" class="nav-link <?php echo is_active('home',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-tachometer-alt"></i><p>Dashboard</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=appointments" class="nav-link <?php echo is_active('appointments',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-calendar-check"></i>
+            <p>Appointments <?php if($pendingAppointments>0): ?><span class="right badge badge-warning"><?php echo $pendingAppointments ?></span><?php endif; ?></p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=calendar" class="nav-link <?php echo is_active('calendar',$current)?'active':'' ?>">
+            <i class="nav-icon far fa-calendar-alt"></i><p>Calendar</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=pets" class="nav-link <?php echo is_active('pets',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-paw"></i><p>Pets</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=services" class="nav-link <?php echo is_active('services',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-stethoscope"></i><p>Services</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=time_slots" class="nav-link <?php echo is_active('time_slots',$current)?'active':'' ?>">
+            <i class="nav-icon far fa-clock"></i><p>Time Slots</p>
+          </a>
+        </li>
+
+        <?php if ($userType === 1): ?>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=payments" class="nav-link <?php echo is_active('payments',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-receipt"></i><p>Payments</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=users" class="nav-link <?php echo is_active('users',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-users"></i><p>Users</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=system_settings" class="nav-link <?php echo is_active('system_settings',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-cogs"></i><p>System Settings</p>
+          </a>
+        </li>
+        <?php endif; ?>
+
+        <li class="nav-header">ACCOUNT</li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>?page=profile" class="nav-link <?php echo is_active('profile',$current)?'active':'' ?>">
+            <i class="nav-icon fas fa-user"></i><p>My Profile</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="<?php echo base_url ?>classes/Login.php?f=logout" class="nav-link">
+            <i class="nav-icon fas fa-sign-out-alt"></i><p>Sign out</p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

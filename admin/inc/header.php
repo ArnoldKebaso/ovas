@@ -1,64 +1,132 @@
 <?php
-  require_once('sess_auth.php');
-  
+// admin/inc/header.php
+// Single top nav shared across admin (matches client theme)
+// NOTE: no function definitions here to avoid redeclare errors.
+
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// Minimal dynamic bits (edit as you please)
+$brandShort = 'VAP';
+$brandFull  = 'Veterinary Appointment System';
+$adminName  = isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : 'Admin';
+$logoUrl    = '/ovas/assets/logo.svg'; // reuse the same logo you used on client header
+$current    = isset($current) ? $current : ''; // allow page to set $current = 'dashboard' etc.
 ?>
+<!doctype html>
+<html lang="en">
 <head>
-  <style>
-    :root{
-      --base_url:<?php echo base_url ?>;
-    }
-  </style>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  	<title><?php echo $_settings->info('title') != false ? $_settings->info('title').' | ' : '' ?><?php echo $_settings->info('name') ?></title>
-    <link rel="icon" href="<?php echo validate_image($_settings->info('logo')) ?>" />
-    <!-- Google Font: Source Sans Pro -->
-    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&amp;display=fallback"> -->
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/fontawesome-free/css/all.min.css">
-    <!-- Ionicons -->
-    <!-- <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"> -->
-    <!-- Tempusdominus Bootstrap 4 -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-      <!-- DataTables -->
-  <link rel="stylesheet" href="<?php echo base_url ?>plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-  <link rel="stylesheet" href="<?php echo base_url ?>plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-  <link rel="stylesheet" href="<?php echo base_url ?>plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-   <!-- Select2 -->
-  <link rel="stylesheet" href="<?php echo base_url ?>plugins/select2/css/select2.min.css">
-  <link rel="stylesheet" href="<?php echo base_url ?>plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-    <!-- iCheck -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!-- JQVMap -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/jqvmap/jqvmap.min.css">
-    <!-- fullCalendar -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/fullcalendar/main.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="<?php echo base_url ?>dist/css/adminlte.css">
-    <link rel="stylesheet" href="<?php echo base_url ?>dist/css/custom.css">
-    <!-- overlayScrollbars -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
-    <!-- Daterange picker -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/daterangepicker/daterangepicker.css">
-    <!-- summernote -->
-    <link rel="stylesheet" href="<?php echo base_url ?>plugins/summernote/summernote-bs4.min.css">
-     <!-- SweetAlert2 -->
-  <link rel="stylesheet" href="<?php echo base_url ?>plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-    <style type="text/css">/* Chart.js */
-      @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}
-    </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title><?= $brandShort; ?> Admin</title>
 
-     <!-- jQuery -->
-    <script src="<?php echo base_url ?>plugins/jquery/jquery.min.js"></script>
-    <!-- jQuery UI 1.11.4 -->
-    <script src="<?php echo base_url ?>plugins/jquery-ui/jquery-ui.min.js"></script>
-    <!-- SweetAlert2 -->
-    <script src="<?php echo base_url ?>plugins/sweetalert2/sweetalert2.min.js"></script>
-    <!-- Toastr -->
-    <script src="<?php echo base_url ?>plugins/toastr/toastr.min.js"></script>
-    <script>
-        var _base_url_ = '<?php echo base_url ?>';
-    </script>
-    <script src="<?php echo base_url ?>dist/js/script.js"></script>
+<!-- Inline theme to keep it self-contained -->
+<style>
+  :root{
+    --brand:#1e5eff;
+    --brand-600:#134fe8;
+    --text:#0f172a;
+    --muted:#64748b;
+    --bg:#0b1020;           /* dark header bg */
+    --card:#ffffff;
+    --soft:#f1f5f9;
+    --ring: rgba(30,94,255,.15);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font:14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";}
+  a{color:inherit;text-decoration:none}
+  img{display:block}
+  .shadow-sm{box-shadow:0 1px 2px rgba(15,23,42,.06),0 1px 1px rgba(15,23,42,.04)}
+  .shadow{box-shadow:0 10px 15px -3px rgba(15,23,42,.1),0 4px 6px -4px rgba(15,23,42,.1)}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid transparent;border-radius:9999px;padding:.6rem 1rem;font-weight:600;cursor:pointer;transition:.2s}
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-primary:hover{background:var(--brand-600)}
+  .btn-outline{background:#fff;border-color:#e2e8f0;color:var(--text)}
+  .chip{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem .7rem;border-radius:9999px;background:#eef2ff;color:#1d4ed8;font-weight:600;font-size:.85rem}
+  /* Top bar */
+  .topbar{position:sticky;top:0;z-index:50;background:#fff}
+  .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;border-bottom:1px solid #e2e8f0}
+  .brand{display:flex;align-items:center;gap:.6rem}
+  .brand img{width:28px;height:28px}
+  .brand .title{font-weight:800;letter-spacing:.2px;color:var(--brand)}
+  .nav-actions{display:flex;align-items:center;gap:.6rem}
+  .avatar{width:34px;height:34px;border-radius:9999px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:grid;place-items:center;color:#1e3a8a;font-weight:800}
+  .avatar span{font-size:.9rem}
+  /* Layout */
+  .layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px)}
+  .sidebar{background:linear-gradient(180deg,#0b1020,#0f172a);color:#e2e8f0}
+  .side-head{padding:1rem;border-bottom:1px solid rgba(148,163,184,.1)}
+  .side-links{padding:.75rem}
+  .side-links a{display:flex;align-items:center;gap:.6rem;padding:.65rem .8rem;border-radius:.6rem;color:#cbd5e1}
+  .side-links a:hover{background:rgba(241,245,249,.06);color:#fff}
+  .side-links a.active{background:rgba(30,94,255,.18);color:#fff}
+  .content{background:#f8fafc;padding:1.2rem}
+  .content .page-title{display:flex;align-items:center;gap:.8rem;margin:0 0 1rem}
+  .cards{display:grid;grid-template-columns:repeat(12,1fr);gap:1rem}
+  .card{grid-column:span 12;background:var(--card);border-radius:14px;border:1px solid #e2e8f0;padding:1rem}
+  @media(min-width:768px){
+    .card--3{grid-column:span 3}
+    .card--4{grid-column:span 4}
+    .card--6{grid-column:span 6}
+  }
+  /* Simple table */
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:.75rem;border-bottom:1px solid #e2e8f0;text-align:left}
+  th{font-size:.85rem;color:#475569;text-transform:uppercase;letter-spacing:.04em}
+  /* Little helpers */
+  .muted{color:var(--muted)}
+  .spacer{height:1rem}
+</style>
 
-  </head>
+</head>
+<body>
+  <!-- Single Top Navbar (same look as client) -->
+  <header class="topbar shadow-sm">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="<?= $logoUrl; ?>" alt="logo">
+        <div class="title"><?= $brandShort; ?> <span class="muted" style="font-weight:600">Admin</span></div>
+      </div>
+      <div class="nav-actions">
+        <a href="/ovas/?page=home" class="btn btn-outline">Back to Site</a>
+        <!-- ONE avatar (removed duplicate profile icon) -->
+        <div class="avatar" title="<?= $adminName; ?>"><span><?= strtoupper($adminName[0] ?? 'A'); ?></span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="side-head">
+        <div class="chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
+          <?= $adminName; ?>
+        </div>
+      </div>
+      <nav class="side-links" id="adminSidebar">
+        <a href="/ovas/admin/index.php?page=home" data-key="dashboard" class="<?= $current==='dashboard'?'active':'';?>">
+          <span>🏠</span> <span>Dashboard</span>
+        </a>
+        <a href="/ovas/admin/index.php?page=appointments" data-key="appointments" class="<?= $current==='appointments'?'active':'';?>">
+          <span>📅</span> <span>Appointments</span>
+        </a>
+        <a href="/ovas/admin/index.php?page=calendar" data-key="calendar" class="<?= $current==='calendar'?'active':'';?>">
+          <span>🗓️</span> <span>Calendar</span>
+        </a>
+        <a href="/ovas/admin/index.php?page=services" data-key="services" class="<?= $current==='services'?'active':'';?>">
+          <span>🩺</span> <span>Services</span>
+        </a>
+        <a href="/ovas/admin/index.php?page=timeslots" data-key="timeslots" class="<?= $current==='timeslots'?'active':'';?>">
+          <span>⏱️</span> <span>Time Slots</span>
+        </a>
+        <a href="/ovas/admin/index.php?page=payments" data-key="payments" class="<?= $current==='payments'?'active':'';?>">
+          <span>💳</span> <span>Payments</span>
+        </a>
+        <a href="/ovas/admin/logout.php" style="margin-top:.4rem;color:#fca5a5">
+          <span>🚪</span> <span>Sign out</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Content starts in index.php after this include -->

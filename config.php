@@ -48,8 +48,8 @@ define('BASE_URL', config('BASE_URL', 'http://localhost/ovas/'));
 define('APP_ROOT', __DIR__);
 define('BOOKING_FEE', (int)config('BOOKING_FEE', 500));
 
-// Bootstrap the application (DB constants, connections, $_settings)
-require_once __DIR__ . '/initialize.php';
+// Do not bootstrap DB or classes here to avoid circular includes.
+// initialize.php is responsible for DB constants, connections and $_settings.
 
 function redirect($url=''){
 	if(!empty($url))

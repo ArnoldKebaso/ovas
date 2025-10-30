@@ -8,6 +8,195 @@ require_once __DIR__ . '/inc/auth_check.php';
 // Determine current section
 $current = isset($_GET['page']) ? trim($_GET['page']) : 'dashboard';
 
+// Handle POST actions before rendering layout to avoid blank pages
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Services CRUD (server-rendered)
+  if ($current === 'services') {
+    $pdo = db();
+    $action = $_POST['action'] ?? '';
+    try {
+      if ($action === 'create' || $action === 'update') {
+        $id  = (int)($_POST['id'] ?? 0);
+        $nm  = trim($_POST['name'] ?? '');
+        $ds  = trim($_POST['description'] ?? '');
+        $fee = (float)($_POST['fee'] ?? 0);
+        $dur = (int)($_POST['duration_min'] ?? 30);
+        $act = isset($_POST['is_active']) ? 1 : 0;
+        if ($nm !== '' && $dur > 0 && $fee >= 0) {
+          if ($action === 'create') {
+            $st = $pdo->prepare("INSERT INTO services (name,description,fee,duration_min,is_active) VALUES (?,?,?,?,?)");
+            $st->execute([$nm,$ds,$fee,$dur,$act]);
+            header('Location: /ovas/admin/index.php?page=services&created=1'); exit;
+          } else {
+            $st = $pdo->prepare("UPDATE services SET name=?, description=?, fee=?, duration_min=?, is_active=?, updated_at=CURRENT_TIMESTAMP WHERE id=?");
+            $st->execute([$nm,$ds,$fee,$dur,$act,$id]);
+            header('Location: /ovas/admin/index.php?page=services&updated=1'); exit;
+          }
+        }
+      }
+      if ($action === 'toggle') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("UPDATE services SET is_active = NOT is_active, updated_at=CURRENT_TIMESTAMP WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=services&updated=1'); exit;
+      }
+      if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("DELETE FROM services WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=services&deleted=1'); exit;
+      }
+    } catch (Throwable $e) {
+      header('Location: /ovas/admin/index.php?page=services&error=1'); exit;
+    }
+  }
+  // Payments CRUD (server-rendered to match schema)
+  if ($current === 'payments') {
+    $pdo = db();
+    $action = $_POST['action'] ?? '';
+    try {
+      if ($action === 'create' || $action === 'update') {
+        $id   = (int)($_POST['id'] ?? 0);
+        $appt = (int)($_POST['appointment_id'] ?? 0);
+        $amt  = (float)($_POST['amount'] ?? 0);
+        $cur  = trim($_POST['currency'] ?? 'KES');
+        $prov = trim($_POST['provider'] ?? 'mpesa');
+        $ref  = trim($_POST['reference'] ?? '');
+        $st   = trim($_POST['status'] ?? 'initiated');
+        if ($appt && $amt >= 0) {
+          if ($action === 'create') {
+            $q = $pdo->prepare("INSERT INTO payments (appointment_id,provider,amount,currency,reference,status,created_at,updated_at) VALUES (?,?,?,?,?,?,NOW(),NOW())");
+            $q->execute([$appt,$prov,$amt,$cur,$ref,$st]);
+            header('Location: /ovas/admin/index.php?page=payments&created=1'); exit;
+          } else {
+            $q = $pdo->prepare("UPDATE payments SET appointment_id=?, provider=?, amount=?, currency=?, reference=?, status=?, updated_at=NOW() WHERE id=?");
+            $q->execute([$appt,$prov,$amt,$cur,$ref,$st,$id]);
+            header('Location: /ovas/admin/index.php?page=payments&updated=1'); exit;
+          }
+        }
+      }
+      if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("DELETE FROM payments WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=payments&deleted=1'); exit;
+      }
+    } catch (Throwable $e) {
+      header('Location: /ovas/admin/index.php?page=payments&error=1'); exit;
+    }
+  }
+  // Pets CRUD (server-rendered)
+  if ($current === 'pets') {
+    $pdo = db();
+    $action = $_POST['action'] ?? '';
+    try {
+      if ($action === 'create' || $action === 'update') {
+        $id   = (int)($_POST['id'] ?? 0);
+        $uid  = (int)($_POST['user_id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $sp   = trim($_POST['species'] ?? 'dog');
+        $br   = trim($_POST['breed'] ?? '');
+        $age  = trim($_POST['age'] ?? '');
+        $wt   = trim($_POST['weight'] ?? '');
+        $nt   = trim($_POST['notes'] ?? '');
+        if ($uid && $name !== '') {
+          if ($action === 'create') {
+            $st = $pdo->prepare("INSERT INTO pets (user_id,name,species,breed,age,weight,notes) VALUES (?,?,?,?,?,?,?)");
+            $st->execute([$uid,$name,$sp,$br,$age,$wt,$nt]);
+            header('Location: /ovas/admin/index.php?page=pets&created=1'); exit;
+          } else {
+            $st = $pdo->prepare("UPDATE pets SET user_id=?, name=?, species=?, breed=?, age=?, weight=?, notes=?, updated_at=CURRENT_TIMESTAMP WHERE id=?");
+            $st->execute([$uid,$name,$sp,$br,$age,$wt,$nt,$id]);
+            header('Location: /ovas/admin/index.php?page=pets&updated=1'); exit;
+          }
+        }
+      }
+      if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("DELETE FROM pets WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=pets&deleted=1'); exit;
+      }
+    } catch (Throwable $e) {
+      header('Location: /ovas/admin/index.php?page=pets&error=1'); exit;
+    }
+  }
+  // Time slots CRUD (server-rendered)
+  if ($current === 'timeslots' || $current === 'time_slots') {
+    $pdo = db();
+    $action = $_POST['action'] ?? '';
+    try {
+      if ($action === 'create' || $action === 'update') {
+        $id   = (int)($_POST['id'] ?? 0);
+        $st   = $_POST['start_time'] ?? '08:00:00';
+        $et   = $_POST['end_time'] ?? '08:30:00';
+        $dur  = (int)($_POST['duration_min'] ?? 30);
+        $cap  = (int)($_POST['max_appointments'] ?? 1);
+        $act  = isset($_POST['is_active']) ? 1 : 0;
+        if ($action === 'create') {
+          $q = $pdo->prepare("INSERT INTO time_slots (start_time,end_time,duration_min,max_appointments,is_active) VALUES (?,?,?,?,?)");
+          $q->execute([$st,$et,$dur,$cap,$act]);
+          header('Location: /ovas/admin/index.php?page=timeslots&created=1'); exit;
+        } else {
+          $q = $pdo->prepare("UPDATE time_slots SET start_time=?,end_time=?,duration_min=?,max_appointments=?,is_active=?,updated_at=CURRENT_TIMESTAMP WHERE id=?");
+          $q->execute([$st,$et,$dur,$cap,$act,$id]);
+          header('Location: /ovas/admin/index.php?page=timeslots&updated=1'); exit;
+        }
+      }
+      if ($action === 'toggle') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("UPDATE time_slots SET is_active = NOT is_active, updated_at=CURRENT_TIMESTAMP WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=timeslots&updated=1'); exit;
+      }
+      if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("DELETE FROM time_slots WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=timeslots&deleted=1'); exit;
+      }
+    } catch (Throwable $e) {
+      header('Location: /ovas/admin/index.php?page=timeslots&error=1'); exit;
+    }
+  }
+  // Users CRUD (server-rendered)
+  if ($current === 'users') {
+    $pdo = db();
+    $action = $_POST['action'] ?? '';
+    try {
+      if ($action === 'create' || $action === 'update') {
+        $id   = (int)($_POST['id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        $email= trim($_POST['email'] ?? '');
+        $phone= trim($_POST['phone'] ?? '');
+        $addr = trim($_POST['address'] ?? '');
+        $isad = isset($_POST['is_admin']) ? 1 : 0;
+        $status = isset($_POST['status']) ? 1 : 0;
+        $pass = $_POST['password'] ?? '';
+        if ($name !== '' && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+          if ($action === 'create') {
+            $hash = password_hash($pass ?: 'password', PASSWORD_BCRYPT);
+            $q = $pdo->prepare("INSERT INTO users (name,email,phone,address,password_hash,is_admin,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,NOW(),NOW())");
+            $q->execute([$name,$email,$phone,$addr,$hash,$isad,$status]);
+            header('Location: /ovas/admin/index.php?page=users&created=1'); exit;
+          } else {
+            if ($pass !== '') {
+              $hash = password_hash($pass, PASSWORD_BCRYPT);
+              $q = $pdo->prepare("UPDATE users SET name=?,email=?,phone=?,address=?,password_hash=?,is_admin=?,status=?,updated_at=NOW() WHERE id=?");
+              $q->execute([$name,$email,$phone,$addr,$hash,$isad,$status,$id]);
+            } else {
+              $q = $pdo->prepare("UPDATE users SET name=?,email=?,phone=?,address=?,is_admin=?,status=?,updated_at=NOW() WHERE id=?");
+              $q->execute([$name,$email,$phone,$addr,$isad,$status,$id]);
+            }
+            header('Location: /ovas/admin/index.php?page=users&updated=1'); exit;
+          }
+        }
+      }
+      if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("DELETE FROM users WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=users&deleted=1'); exit;
+      }
+    } catch (Throwable $e) {
+      header('Location: /ovas/admin/index.php?page=users&error=1'); exit;
+    }
+  }
+}
+
 // Handle AJAX sub-requests without emitting layout chrome
 if (isset($_GET['ajax'])) {
   switch ($current) {
@@ -58,7 +247,55 @@ switch ($current) {
      ========================= */
   case 'services':
     echo '<h1 class="page-title">Services</h1>';
-    echo '<div class="card">Manage service list (name, fee, duration).</div>';
+    $SERV_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'services';
+    $svc     = $SERV_DIR . DIRECTORY_SEPARATOR . 'manage_service.php';
+    if (is_file($svc)) {
+      require $svc;
+    } else {
+      echo '<div class="card"><div class="card-body">Services module missing.</div></div>';
+    }
+    break;
+
+  /* =========================
+     PETS
+     ========================= */
+  case 'pets':
+    echo '<h1 class="page-title">Pets</h1>';
+    $PETS_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'pets';
+    $pets     = $PETS_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($pets)) {
+      require $pets;
+    } else {
+      echo '<div class="card"><div class="card-body">Pets module missing.</div></div>';
+    }
+    break;
+
+  /* =========================
+     USERS
+     ========================= */
+  case 'users':
+    echo '<h1 class="page-title">Users</h1>';
+    $USR_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'users';
+    $usr     = $USR_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($usr)) {
+      require $usr;
+    } else {
+      echo '<div class="card"><div class="card-body">Users module missing.</div></div>';
+    }
+    break;
+
+  /* =========================
+     PETS
+     ========================= */
+  case 'pets':
+    echo '<h1 class="page-title">Pets</h1>';
+    $PETS_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'pets';
+    $pets     = $PETS_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($pets)) {
+      require $pets;
+    } else {
+      echo '<div class="card"><div class="card-body">Pets module missing.</div></div>';
+    }
     break;
 
   /* =========================
@@ -67,7 +304,13 @@ switch ($current) {
   case 'timeslots':
   case 'time_slots':
     echo '<h1 class="page-title">Time Slots</h1>';
-    echo '<div class="card">CRUD for time slots and capacity.</div>';
+    $TS_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'timeslots';
+    $ts     = $TS_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($ts)) {
+      require $ts;
+    } else {
+      echo '<div class="card"><div class="card-body">Time Slots module missing.</div></div>';
+    }
     break;
 
   /* =========================
@@ -75,7 +318,13 @@ switch ($current) {
      ========================= */
   case 'payments':
     echo '<h1 class="page-title">Payments</h1>';
-    echo '<div class="card">M-Pesa transactions & status.</div>';
+    $PAY_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'payments';
+    $pay     = $PAY_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($pay)) {
+      require $pay;
+    } else {
+      echo '<div class="card"><div class="card-body">Payments module missing.</div></div>';
+    }
     break;
 
   /* =========================
@@ -131,3 +380,4 @@ switch ($current) {
 </script>
 </body>
 </html>
+

@@ -1,6 +1,8 @@
 <?php
 // admin/index.php - Admin dashboard router
 require_once __DIR__ . '/../config.php';
+// Ensure db() helper and globals are available for POST handlers
+require_once __DIR__ . '/../initialize.php';
 
 // Enforce admin session
 require_once __DIR__ . '/inc/auth_check.php';
@@ -405,17 +407,17 @@ switch ($current) {
   }
   // Inject missing menu links when header wasn’t updated yet
   const nav = document.getElementById('adminSidebar');
-  const ensureLink = (key, text, href) => {
+  const ensureLink = (key, text, href, icon='') => {
     if (!nav) return;
     if (!nav.querySelector(`a[data-key="${key}"]`)) {
       const a = document.createElement('a');
-      a.href = href; a.dataset.key = key; a.textContent = text;
+      a.href = href; a.dataset.key = key; a.innerHTML = `${icon ? `<span>${icon}</span> `: ''}<span>${text}</span>`;
       nav.appendChild(a);
     }
   };
-  ensureLink('users', 'Users', '/ovas/admin/index.php?page=users');
-  ensureLink('notifications', 'Notifications', '/ovas/admin/index.php?page=notifications');
-  ensureLink('mpesa', 'M-Pesa', '/ovas/admin/index.php?page=mpesa');
+  ensureLink('users', 'Users', '/ovas/admin/index.php?page=users', '👤');
+  ensureLink('notifications', 'Notifications', '/ovas/admin/index.php?page=notifications', '🔔');
+  ensureLink('mpesa', 'M-Pesa', '/ovas/admin/index.php?page=mpesa', '💳');
 </script>
 </body>
 </html>

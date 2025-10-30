@@ -37,7 +37,10 @@ $total = count($rows);
 .table td,.table th{vertical-align:middle}
 #payForm .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 @media (max-width: 900px){#payForm .grid{grid-template-columns:1fr}}
-.input,select,textarea{width:100%}
+input.input, select.input, textarea.input{width:100%;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font:inherit}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}
+.btn-primary{background:#1e5eff;color:#fff}
+.btn-outline{background:#fff;border-color:#e2e8f0;color:#0f172a}
 .btn-icon{padding:6px 10px}
 </style>
 
@@ -64,7 +67,7 @@ $total = count($rows);
       <button class="btn btn-outline btn-icon" type="button" onclick="togglePayForm(false)">Close</button>
     </div>
 
-    <form method="post" action="/ovas/admin/index.php?page=payments">
+    <form id="payForm" method="post" action="/ovas/admin/index.php?page=payments">
       <input type="hidden" name="action" value="<?= $editing? 'update':'create' ?>">
       <?php if($editing): ?><input type="hidden" name="id" value="<?= (int)$editing['id'] ?>"><?php endif; ?>
       <div class="grid">
@@ -155,4 +158,3 @@ $total = count($rows);
 <script>
 function togglePayForm(open){ document.getElementById('payForm').style.display = open ? 'block' : 'none'; }
 </script>
-

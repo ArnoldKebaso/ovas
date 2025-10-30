@@ -64,4 +64,10 @@ require_once('classes/SystemSettings.php');
 // Legacy database connection for backward compatibility
 $db = new DBConnection;
 $conn = $db->conn;
+
+// Global system settings instance
+if (!isset($_settings) || !($_settings instanceof SystemSettings)) {
+    $_settings = new SystemSettings();
+    $_settings->load_system_info();
+}
 ?>

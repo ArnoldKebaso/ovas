@@ -7,9 +7,10 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // Minimal dynamic bits (edit as you please)
 $brandShort = 'VAP';
+$brand = 'VAP';
 $brandFull  = 'Veterinary Appointment System';
 $adminName  = isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : 'Admin';
-$logoUrl    = '/ovas/assets/logo.svg'; // reuse the same logo you used on client header
+$logoUrl    = '/'; // reuse the same logo you used on client header
 $current    = isset($current) ? $current : ''; // allow page to set $current = 'dashboard' etc.
 ?>
 <!doctype html>
@@ -18,6 +19,9 @@ $current    = isset($current) ? $current : ''; // allow page to set $current = '
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title><?= $brandShort; ?> Admin</title>
+
+<!-- Bootstrap 5 CSS (CDN) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
 <!-- Inline theme to keep it self-contained -->
 <style>
@@ -52,6 +56,14 @@ $current    = isset($current) ? $current : ''; // allow page to set $current = '
   .nav-actions{display:flex;align-items:center;gap:.6rem}
   .avatar{width:34px;height:34px;border-radius:9999px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:grid;place-items:center;color:#1e3a8a;font-weight:800}
   .avatar span{font-size:.9rem}
+
+  .ovas-logo {
+  width:34px; height:34px; border-radius:10px;
+  display:grid; place-items:center; color:#fff;
+  background:linear-gradient(135deg,#2f65f6,#22c1c3);
+  box-shadow:0 6px 14px rgba(47,101,246,.25);
+  font-weight:900; font-size:16px;
+}
   /* Layout */
   .layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 56px)}
   .sidebar{background:linear-gradient(180deg,#0b1020,#0f172a);color:#e2e8f0}
@@ -83,10 +95,10 @@ $current    = isset($current) ? $current : ''; // allow page to set $current = '
   <!-- Single Top Navbar (same look as client) -->
   <header class="topbar shadow-sm">
     <div class="topbar-inner">
-      <div class="brand">
-        <img src="<?= $logoUrl; ?>" alt="logo">
-        <div class="title"><?= $brandShort; ?> <span class="muted" style="font-weight:600">Admin</span></div>
-      </div>
+      <a class="ovas-brand" href="/ovas/admin/index.php?page=dashboard">
+        <span class="ovas-logo">🐾</span>
+        <span class="ovas-name"><?php echo htmlspecialchars($brand) ?></span>
+      </a>
       <div class="nav-actions">
         <a href="/ovas/?page=home" class="btn btn-outline">Back to Site</a>
         <!-- ONE avatar (removed duplicate profile icon) -->

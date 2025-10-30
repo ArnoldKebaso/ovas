@@ -17,13 +17,17 @@ header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 
-// Gate: require login
-if (empty($_SESSION['user']) || empty($_SESSION['user']['id'])) {
+// Gate: require admin login (align with Login class session keys)
+if (empty($_SESSION['logged_in']) || empty($_SESSION['is_admin']) || (int)$_SESSION['is_admin'] !== 1) {
     // Optional: remember intended URL
     $redirect = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : 'index.php';
     header('Location: login.php?redirect=' . urlencode($redirect));
     exit;
 }
 
-// Convenience var for templates
-$currentUser = $_SESSION['user'];
+// Convenience vars for templates
+$currentUser = [
+    'id'    => $_SESSION['id']    ?? null,
+    'name'  => $_SESSION['name']  ?? 'Admin',
+    'email' => $_SESSION['email'] ?? null,
+];

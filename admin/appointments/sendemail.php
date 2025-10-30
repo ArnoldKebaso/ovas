@@ -1,43 +1,55 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
+// admin/sendemail.php
+declare(strict_types=1);
 
-require_once 'phpmailer/Exception.php';
-require_once 'phpmailer/PHPMailer.php';
-require_once 'phpmailer/SMTP.php';
+/**
+ * Lightweight email sender. If PHPMailer is available (files in your project),
+ * we’ll use it. Otherwise we fallback to PHP mail().
+ */
+function sendAppointmentEmail(array $row, string $action = 'confirmed'): bool
+{
+  $to   = $row['email'] ?? '';
+  if (!$to) return false;
 
-$mail = new PHPMailer(true);
+  $subject = 'Your Appointment ' . ucfirst($action);
+  $body    = sprintf(
+    "Hello %s,\n\nYour appointment (%s) for %s on %s %s has been %s.\n\nRegards,\nVAP",
+    $row['client_name'] ?? ($row['name'] ?? 'Client'),
+    $row['code'] ?? ('APPT-' . ($row['id'] ?? '')),
+    $row['service_name'] ?? ($row['service'] ?? 'service'),
+    substr($row['appt_date'] ?? ($row['appointment_date'] ?? ''), 0, 10),
+    $row['time_slot'] ?? '',
+    $action
+  );
 
-$alert = '';
+  // Try PHPMailer if present
+  $phpMailerAvailable = is_file(__DIR__ . '/PHPMailer.php') && is_file(__DIR__ . '/SMTP.php');
+  if ($phpMailerAvailable) {
+    require_once __DIR__ . '/PHPMailer.php';
+    require_once __DIR__ . '/SMTP.php';
+    try {
+      $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+      // Configure as needed for your environment
+      $mail->isSMTP();
+      $mail->Host       = 'smtp.gmail.com';
+      $mail->Port       = 587;
+      $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->SMTPAuth   = true;
+      // TODO: put your SMTP creds here
+      $mail->Username   = 'no-reply@example.com';
+      $mail->Password   = 'password';
 
-if(isset($_POST['submit'])){
-  $name = $_POST['name'];
-  $email = $_POST['email'];
-  $message = $_POST['message'];
-
-  try{
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'chemorein24@gmail.com'; // Gmail address which you want to use as SMTP server
-    $mail->Password = 'rdnf mlot rhuf nflq'; // Gmail address Password
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = '587';
-
-    $mail->setFrom('chemorein24@gmail.com'); // Gmail address which you used as SMTP server
-    $mail->addAddress('chemorein24@gmail.com'); // Email address where you want to receive emails (you can use any of your gmail address including the gmail address which you used as SMTP server)
-
-    $mail->isHTML(true);
-    $mail->Subject = 'Message Received (Contact Page)';
-    $mail->Body = "<h3>Name : $name <br>Email: $email <br>Message : $message</h3>";
-
-    $mail->send();
-    $alert = '<div class="alert-success">
-                 <span>Message Sent!</span>
-                </div>';
-  } catch (Exception $e){
-    $alert = '<div class="alert-error">
-                <span>'.$e->getMessage().'</span>
-              </div>';
+      $mail->setFrom('no-reply@example.com', 'VAP');
+      $mail->addAddress($to);
+      $mail->Subject = $subject;
+      $mail->Body    = $body;
+      $mail->send();
+      return true;
+    } catch (\Throwable $e) {
+      // fall back to mail()
+    }
   }
+
+  // Fallback
+  return @mail($to, $subject, $body);
 }
-?>

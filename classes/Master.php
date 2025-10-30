@@ -1,5 +1,5 @@
 <?php
-require_once('../config.php');
+require_once __DIR__ . '/../initialize.php';
 Class Master extends DBConnection {
 	private $settings;
 	public function __construct(){

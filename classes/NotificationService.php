@@ -283,6 +283,24 @@ class NotificationService {
             return false;
         }
     }
+
+    // Generic helpers for admin testing/UI
+    public function sendGeneralEmail($toEmail, $toName, $subject, $html) {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->addAddress($toEmail, $toName ?: $toEmail);
+            $this->mailer->Subject = $subject ?: 'Message';
+            $this->mailer->Body = $html ?: '<p>Empty</p>';
+            return $this->mailer->send();
+        } catch (Exception $e) {
+            error_log('sendGeneralEmail failed: '.$e->getMessage());
+            return false;
+        }
+    }
+
+    public function sendGeneralSMS($phone, $message) {
+        return $this->sendSMS($phone, $message);
+    }
     
     /**
      * Format phone number for SMS

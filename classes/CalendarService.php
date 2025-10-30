@@ -161,6 +161,63 @@ class CalendarService {
             return false;
         }
     }
+
+    /**
+     * Create a manual event with summary/description and explicit times
+     */
+    public function createManualEvent($data) {
+        if (!$this->isConfigured()) return false;
+        try {
+            $event = new Event([
+                'summary' => $data['summary'] ?? 'Event',
+                'description' => $data['description'] ?? '',
+                'start' => [
+                    'dateTime' => $data['start'],
+                    'timeZone' => $this->timezone,
+                ],
+                'end' => [
+                    'dateTime' => $data['end'],
+                    'timeZone' => $this->timezone,
+                ],
+            ]);
+            $created = $this->service->events->insert($this->calendarId, $event);
+            return $created->getId();
+        } catch (Exception $e) {
+            error_log('Google Calendar: manual create failed: '.$e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * List events in range [from,to]
+     */
+    public function listEvents($fromIso, $toIso, $max = 50) {
+        if (!$this->isConfigured()) return [];
+        try {
+            $opt = [
+                'timeMin' => $fromIso,
+                'timeMax' => $toIso,
+                'singleEvents' => true,
+                'orderBy' => 'startTime',
+                'maxResults' => $max,
+            ];
+            $ev = $this->service->events->listEvents($this->calendarId, $opt);
+            $out = [];
+            foreach ($ev->getItems() as $e) {
+                $out[] = [
+                    'id' => $e->getId(),
+                    'summary' => $e->getSummary(),
+                    'start' => $e->getStart()->getDateTime() ?: $e->getStart()->getDate(),
+                    'end' => $e->getEnd()->getDateTime() ?: $e->getEnd()->getDate(),
+                    'htmlLink' => $e->getHtmlLink(),
+                ];
+            }
+            return $out;
+        } catch (Exception $e) {
+            error_log('Google Calendar: list failed: '.$e->getMessage());
+            return [];
+        }
+    }
     
     /**
      * Delete calendar event

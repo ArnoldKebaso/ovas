@@ -239,7 +239,13 @@ switch ($current) {
      ========================= */
   case 'calendar':
     echo '<h1 class="page-title">Calendar</h1>';
-    echo '<div class="card">Embed calendar widget / Google Calendar feed.</div>';
+    $CAL_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'calendar';
+    $cal     = $CAL_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($cal)) {
+      require $cal;
+    } else {
+      echo '<div class="card"><div class="card-body">Calendar module missing.</div></div>';
+    }
     break;
 
   /* =========================
@@ -282,6 +288,26 @@ switch ($current) {
     } else {
       echo '<div class="card"><div class="card-body">Users module missing.</div></div>';
     }
+    break;
+
+  /* =========================
+     NOTIFICATIONS
+     ========================= */
+  case 'notifications':
+    echo '<h1 class="page-title">Notifications</h1>';
+    $N_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'notifications';
+    $n     = $N_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($n)) { require $n; } else { echo '<div class="card"><div class="card-body">Notifications module missing.</div></div>'; }
+    break;
+
+  /* =========================
+     M-PESA
+     ========================= */
+  case 'mpesa':
+    echo '<h1 class="page-title">M-Pesa</h1>';
+    $M_DIR = __DIR__ . DIRECTORY_SEPARATOR . 'mpesa';
+    $m     = $M_DIR . DIRECTORY_SEPARATOR . 'manage.php';
+    if (is_file($m)) { require $m; } else { echo '<div class="card"><div class="card-body">M-Pesa module missing.</div></div>'; }
     break;
 
   /* =========================
@@ -377,6 +403,19 @@ switch ($current) {
     const act = document.querySelector(`#adminSidebar a[data-key="${saved}"]`);
     if(act) act.classList.add('active');
   }
+  // Inject missing menu links when header wasn’t updated yet
+  const nav = document.getElementById('adminSidebar');
+  const ensureLink = (key, text, href) => {
+    if (!nav) return;
+    if (!nav.querySelector(`a[data-key="${key}"]`)) {
+      const a = document.createElement('a');
+      a.href = href; a.dataset.key = key; a.textContent = text;
+      nav.appendChild(a);
+    }
+  };
+  ensureLink('users', 'Users', '/ovas/admin/index.php?page=users');
+  ensureLink('notifications', 'Notifications', '/ovas/admin/index.php?page=notifications');
+  ensureLink('mpesa', 'M-Pesa', '/ovas/admin/index.php?page=mpesa');
 </script>
 </body>
 </html>

@@ -3,35 +3,40 @@ $ROOT = realpath(__DIR__ . '/../../');
 require_once $ROOT . '/initialize.php';
 ?>
 <style>
-.cal-card{padding:1rem;border:1px solid #e2e8f0;border-radius:12px;background:#fff}
-.row{display:flex;gap:.75rem;flex-wrap:wrap}
-.row > *{flex:1 1 200px}
+.cal-card{padding:1rem;border:1px solid #e2e8f0;border-radius:14px;background:#fff;box-shadow:0 1px 2px rgba(15,23,42,.06)}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.row > label{display:flex;flex-direction:column;gap:6px;min-width:200px;flex:1}
+input.input{border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font:inherit}
 table{width:100%;border-collapse:collapse}
 th,td{padding:.5rem;border-bottom:1px solid #e2e8f0;text-align:left}
 .muted{color:#64748b}
 .badge{display:inline-block;padding:.25rem .5rem;border-radius:999px;background:#eef2ff;color:#1d4ed8;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid transparent;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer}
+.btn-primary{background:#1e5eff;color:#fff}
+.btn-outline{background:#fff;border-color:#e2e8f0;color:#0f172a}
 </style>
 
 <div class="cal-card">
   <div class="row">
-    <div>
-      <div class="muted">Google Calendar</div>
-      <div id="calStatus" class="badge">Checking…</div>
-    </div>
-    <div style="flex:2">
-      <form id="rangeForm" class="row" onsubmit="return false">
-        <label>From<input type="date" id="from" value="<?= date('Y-m-d') ?>" class="input"></label>
-        <label>To<input type="date" id="to" value="<?= date('Y-m-d', strtotime('+14 days')) ?>" class="input"></label>
+    <label>Status
+      <div id="calStatus" class="badge" style="display:inline-block">Checking…</div>
+    </label>
+    <form id="rangeForm" class="row" onsubmit="return false" style="flex:1">
+      <label>From<input type="date" id="from" value="<?= date('Y-m-d') ?>" class="input"></label>
+      <label>To<input type="date" id="to" value="<?= date('Y-m-d', strtotime('+14 days')) ?>" class="input"></label>
+      <div>
         <button class="btn btn-primary" id="btnList">List Events</button>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
   <div class="row" style="margin-top:.75rem">
     <form id="manualForm" class="row" onsubmit="return false">
       <label>Summary<input type="text" id="m_summary" placeholder="Title" required></label>
       <label>Start<input type="datetime-local" id="m_start" required></label>
       <label>End<input type="datetime-local" id="m_end" required></label>
-      <button class="btn btn-outline" id="btnCreate">Create Manual Event</button>
+      <div>
+        <button class="btn btn-outline" id="btnCreate">Create Manual Event</button>
+      </div>
     </form>
   </div>
 </div>
@@ -96,4 +101,3 @@ document.getElementById('btnList').addEventListener('click', listEvents);
 document.getElementById('btnCreate').addEventListener('click', createManual);
 checkStatus();
 </script>
-

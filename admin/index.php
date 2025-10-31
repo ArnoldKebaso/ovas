@@ -12,6 +12,38 @@ $current = isset($_GET['page']) ? trim($_GET['page']) : 'dashboard';
 
 // Handle POST actions before rendering layout to avoid blank pages
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Appointments CRUD (server-rendered) — pre-render handler to avoid blank page
+  if ($current === 'appointments') {
+    $pdo = db();
+    $action = $_POST['action'] ?? '';
+    try {
+      if ($action === 'create') {
+        $code = 'APPT-'.date('ymdHis');
+        $user = (int)($_POST['user_id'] ?? 0);
+        $pet  = (int)($_POST['pet_id'] ?? 0);
+        $svc  = (int)($_POST['service_id'] ?? 0);
+        $slot = (int)($_POST['time_slot_id'] ?? 0);
+        $date = $_POST['schedule_date'] ?? date('Y-m-d');
+        $notes= $_POST['notes'] ?? null;
+        $st   = $pdo->prepare("INSERT INTO appointments (code,user_id,pet_id,service_id,time_slot_id,schedule_date,notes,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?, 'Pending', NOW(), NOW())");
+        $st->execute([$code,$user,$pet,$svc,$slot,$date,$notes]);
+        header('Location: /ovas/admin/index.php?page=appointments&created=1'); exit;
+      }
+      if ($action === 'status') {
+        $id  = (int)($_POST['id'] ?? 0);
+        $val = $_POST['value'] ?? 'Pending';
+        if ($id) $pdo->prepare("UPDATE appointments SET status=?, updated_at=NOW() WHERE id=?")->execute([$val,$id]);
+        header('Location: /ovas/admin/index.php?page=appointments&updated=1'); exit;
+      }
+      if ($action === 'delete') {
+        $id = (int)($_POST['id'] ?? 0);
+        if ($id) $pdo->prepare("DELETE FROM appointments WHERE id=?")->execute([$id]);
+        header('Location: /ovas/admin/index.php?page=appointments&deleted=1'); exit;
+      }
+    } catch (Throwable $e) {
+      header('Location: /ovas/admin/index.php?page=appointments&error=1'); exit;
+    }
+  }
   // Services CRUD (server-rendered)
   if ($current === 'services') {
     $pdo = db();
